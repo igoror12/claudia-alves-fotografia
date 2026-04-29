@@ -68,9 +68,10 @@ export async function processAndUploadPhoto(
         })
         .webp({
           quality: v.quality,
-          // 4:4:4 (1x1) preserva crominância em peles e tecidos
-          // (default 4:2:0 cria halos em fotografia de retrato)
-          chromaSubsampling: v.name === "thumb" ? "4:2:0" : "4:4:4",
+          // smartSubsample = true → preserva crominância em peles e tecidos
+          // (equivalente a 4:4:4 em JPEG; default WebP é 4:2:0).
+          // Em thumbs deixamos default para máxima compressão.
+          smartSubsample: v.name !== "thumb",
           effort: 5, // 0-6, 5 = bom ratio compressão/tempo
         })
         .toBuffer();
