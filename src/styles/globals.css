@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Variáveis globais (espelham o prototipo aprovado) ───────── */
+:root {
+  --cream: #faf8f4;
+  --ink: #2e2820;
+  --warm-mid: #9e8e7e;
+  --warm-light: #ddd4c8;
+  --accent: #c9a882;
+  --section-dark: #3c3228;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* Cursor custom só em dispositivos com hover (não em touch) */
+@media (hover: hover) and (pointer: fine) {
+  body.cursor-active {
+    cursor: none;
+  }
+}
+
+/* ─── Reveal on scroll ────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Marquee continuous ─────────────────────────────────────── */
+.marquee-band {
+  background: var(--section-dark);
+  padding: 1rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-inner {
+  display: inline-flex;
+  gap: 3rem;
+  animation: marquee 20s linear infinite;
+}
+
+/* ─── Botão primário com swipe accent ─────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--ink);
+  padding: 0.9rem 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  text-decoration: none;
+}
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: translateX(-101%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-primary:hover::before {
+  transform: translateX(0);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+}
+.btn-primary > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Reduced motion respeito ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

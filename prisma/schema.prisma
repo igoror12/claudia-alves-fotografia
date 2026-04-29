@@ -1,0 +1,155 @@
+// Schema da base de dados — Cláudia Alves Fotografia
+// Provider: PostgreSQL (Vercel Postgres / Neon)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// ─── Autenticação (NextAuth + Prisma adapter) ───────────────────
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  role          Role      @default(ADMIN)
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  blogPosts     BlogPost[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Galeria de fotografias ─────────────────────────────────────
+model Photo {
+  id            String   @id @default(cuid())
+  // URLs das variantes geradas pelo Sharp + guardadas em Vercel Blob
+  thumbUrl      String   // 400px largura, ~70KB, usado em grids
+  mediumUrl     String   // 1200px largura, ~300KB, vista standard
+  fullUrl       String   // 2400px largura, ~1MB, lightbox/zoom
+  originalUrl   String?  // master sem alterações (privado, opcional)
+  blurDataUrl   String   // base64 placeholder ~10 chars para next/image
+  width         Int
+  height        Int
+  // Metadata (preenchida manualmente ou pela IA)
+  title         String?
+  altText       String   // gerado por Claude se não fornecido
+  description   String?
+  keywords      String[] @default([])  // SEO, gerado por Claude
+  // Categorização
+  category      Category @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  tags          String[] @default([])  // mood, cor dominante, etc.
+  // Organização e ordenação
+  featured      Boolean  @default(false)
+  order         Int      @default(0)
+  published     Boolean  @default(true)
+  // EXIF (preservado para credibilidade técnica)
+  exifCamera    String?
+  exifLens      String?
+  exifSettings  String?  // ex: "f/2.8 · 1/250s · ISO 400"
+  shotAt        DateTime?
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([categoryId, published, order])
+  @@index([featured, createdAt])
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  slug        String  @unique  // "retratos", "casamentos", "eventos"
+  name        String           // "Retratos"
+  description String?
+  order       Int     @default(0)
+  photos      Photo[]
+}
+
+// ─── Blog ───────────────────────────────────────────────────────
+model BlogPost {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  excerpt      String   @db.Text
+  content      String   @db.Text  // Markdown
+  coverUrl     String?
+  category     String   // texto livre: "Casamentos", "Técnica", "Inspiração"
+  published    Boolean  @default(false)
+  publishedAt  DateTime?
+  // SEO
+  metaTitle    String?
+  metaDesc     String?
+  // Autor
+  author       User     @relation(fields: [authorId], references: [id])
+  authorId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([published, publishedAt])
+}
+
+// ─── Mensagens de contacto / pedidos de orçamento ───────────────
+model ContactRequest {
+  id          String        @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  sessionType String        // "Casamento", "Retrato", "Evento"...
+  desiredDate String?       // texto livre, "Setembro 2026"
+  message     String        @db.Text
+  // Pré-orçamento gerado pelo chatbot Claude (se aplicável)
+  aiSummary   String?       @db.Text
+  aiEstimate  String?       // ex: "€1.200 - €1.800"
+  status      ContactStatus @default(NEW)
+  createdAt   DateTime      @default(now())
+
+  @@index([status, createdAt])
+}
+
+enum ContactStatus {
+  NEW
+  REPLIED
+  BOOKED
+  ARCHIVED
+}
