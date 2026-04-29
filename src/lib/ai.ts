@@ -51,11 +51,15 @@ function extractJSON<T>(text: string): T | null {
  * Usamos sempre URL (mais barato em tokens que base64) — as variantes
  * já estão alojadas no Vercel Blob com URL imutável.
  */
-function imageBlock(url: string) {
+// ✅ CORRETO
+function imageBlock(imageUrl: string) {
   return {
     type: "image" as const,
-    source: { type: "url" as const, url },
-  };
+    source: {
+      type: "url" as const,
+      url: imageUrl,
+    },
+  } as any;
 }
 
 // ─── 1. Geração de alt-text + keywords SEO ───────────────────────
