@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
@@ -15,28 +16,59 @@ import { Reveal } from "@/components/Reveal";
 // sem precisar de redeploy. Compromisso entre frescura e cache.
 export const revalidate = 600;
 
+// Tipos derivados das chamadas Prisma — necessários porque envolvemos
+// em try/catch com fallback [], o que perderia o tipo se não anotássemos.
+type PhotoWithCat = Prisma.PhotoGetPayload<{ include: { category: true } }>;
+type Post = Prisma.BlogPostGetPayload<object>;
+type Cat = Prisma.CategoryGetPayload<object>;
+
+/**
+ * Busca os dados da homepage tolerando DB vazia ou inexistente.
+ *
+ * Porquê este wrapper:
+ * - Vercel faz o primeiro build ANTES do `prisma db push` correr → tabelas
+ *   ainda não existem, prerender de `/` rebenta.
+ * - Em vez de bloquear o deploy, devolvemos arrays vazios e os componentes
+ *   renderizam estado "sem conteúdo". Após o seed, o ISR (10min) puxa os
+ *   dados reais sem novo deploy.
+ */
+async function safeFetchHomeData(): Promise<{
+  featured: PhotoWithCat[];
+  gallery: PhotoWithCat[];
+  posts: Post[];
+  categories: Cat[];
+}> {
+  try {
+    const [featured, gallery, posts, categories] = await Promise.all([
+      prisma.photo.findMany({
+        where: { featured: true, published: true },
+        orderBy: { order: "asc" },
+        take: 3,
+        include: { category: true },
+      }),
+      prisma.photo.findMany({
+        where: { published: true },
+        orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+        take: 6,
+        include: { category: true },
+      }),
+      prisma.blogPost.findMany({
+        where: { published: true },
+        orderBy: { publishedAt: "desc" },
+        take: 3,
+      }),
+      prisma.category.findMany({ orderBy: { order: "asc" } }),
+    ]);
+    return { featured, gallery, posts, categories };
+  } catch (e) {
+    // DB ainda não migrada / unreachable. Log para debug e fallback vazio.
+    console.warn("[homepage] DB indisponível, a renderizar com fallback vazio:", e);
+    return { featured: [], gallery: [], posts: [], categories: [] };
+  }
+}
+
 export default async function HomePage() {
-  // Busca em paralelo: hero featured + galeria + posts recentes
-  const [featured, gallery, posts, categories] = await Promise.all([
-    prisma.photo.findMany({
-      where: { featured: true, published: true },
-      orderBy: { order: "asc" },
-      take: 3,
-      include: { category: true },
-    }),
-    prisma.photo.findMany({
-      where: { published: true },
-      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-      take: 6,
-      include: { category: true },
-    }),
-    prisma.blogPost.findMany({
-      where: { published: true },
-      orderBy: { publishedAt: "desc" },
-      take: 3,
-    }),
-    prisma.category.findMany({ orderBy: { order: "asc" } }),
-  ]);
+  const { featured, gallery, posts, categories } = await safeFetchHomeData();
 
   return (
     <>
