@@ -41,7 +41,7 @@ export function Services() {
         {SERVICES.map((s) => (
           <article
             key={s.number}
-            className="reveal group relative overflow-hidden border border-warm-light hover:border-section-dark transition-colors p-12 before:absolute before:inset-0 before:bg-section-dark before:translate-y-full hover:before:translate-y-0 before:transition-transform before:duration-[500ms]"
+            className="reveal group relative overflow-hidden border border-warm-light hover:border-section-dark transition-colors p-12 before:content-[''] before:absolute before:inset-0 before:bg-section-dark before:translate-y-full hover:before:translate-y-0 before:transition-transform before:duration-[500ms] before:ease-[cubic-bezier(0.4,0,0.2,1)]"
           >
             <div className="relative z-[1]">
               <div className="font-serif text-6xl font-light text-warm-light group-hover:text-accent/25 leading-none mb-6 transition-colors">

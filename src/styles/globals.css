@@ -46,6 +46,20 @@ body {
 }
 
 /* ─── Marquee continuous ─────────────────────────────────────── */
+/* Os keyframes ficam definidos AQUI (não no tailwind.config) porque
+   o JIT do Tailwind purga keyframes que não são usados via animate-*.
+   Como referenciamos `animation: marquee` diretamente em CSS plano,
+   precisamos da definição no mesmo ficheiro para garantir que
+   sobrevive ao build de produção. */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .marquee-band {
   background: var(--section-dark);
   padding: 1rem 0;
@@ -56,6 +70,8 @@ body {
   display: inline-flex;
   gap: 3rem;
   animation: marquee 20s linear infinite;
+  /* will-change: hint para o browser usar GPU compositing */
+  will-change: transform;
 }
 
 /* ─── Botão primário com swipe accent ─────────────────────────── */
