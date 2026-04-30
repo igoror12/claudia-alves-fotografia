@@ -36,7 +36,7 @@ export function Blog({ posts }: { posts: BlogPost[] }) {
           <Link
             key={post.id}
             href={`/blog/${post.slug}`}
-            className="reveal group block"
+            className="blog-card reveal block"
           >
             <div className="aspect-[3/2] overflow-hidden mb-5 relative bg-warm-light">
               {post.coverUrl ? (
@@ -45,14 +45,14 @@ export function Blog({ posts }: { posts: BlogPost[] }) {
                   alt={post.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover transition-transform duration-[700ms] group-hover:scale-[1.05]"
+                  className="blog-thumb-img object-cover"
                 />
               ) : null}
             </div>
             <div className="text-[0.65rem] uppercase tracking-[0.2em] text-accent mb-2">
               {post.category}
             </div>
-            <h3 className="font-serif text-[1.4rem] font-light leading-[1.3] mb-3 text-ink group-hover:text-accent transition-colors">
+            <h3 className="blog-title font-serif text-[1.4rem] font-light leading-[1.3] mb-3 text-ink">
               {post.title}
             </h3>
             <p className="text-[0.82rem] leading-[1.7] text-warm-mid mb-4">

@@ -1,12 +1,12 @@
 export function About() {
   return (
     <section
-      className="section-about px-12 py-24 bg-section-dark grid md:grid-cols-2 gap-24 items-center"
+      className="px-12 py-24 bg-section-dark grid md:grid-cols-2 gap-24 items-center"
       id="about"
     >
-      <div className="reveal relative aspect-[3/4] overflow-hidden">
-        <div className="w-full h-full bg-gradient-to-br from-[#5A4838] via-[#8C6A54] to-[#B28E74] transition-transform duration-[800ms] hover:scale-[1.03]" />
-        <div className="absolute top-6 left-6 -right-6 -bottom-6 border border-accent/30 pointer-events-none" />
+      <div className="about-portrait reveal aspect-[3/4]">
+        <div className="about-portrait-img bg-gradient-to-br from-[#5A4838] via-[#8C6A54] to-[#B28E74]" />
+        <div className="about-portrait-frame" />
       </div>
 
       <div className="reveal text-cream">

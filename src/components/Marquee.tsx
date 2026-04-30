@@ -3,8 +3,6 @@
 // intencional para criar o loop infinito sem "salto" visual.
 const ITEMS = ["Retratos", "Casamentos", "Eventos", "Braga · Portugal"];
 
-// Constrói uma sequência [item, ✦, item, ✦, ...] e duplica-a — o keyframe
-// `marquee` translada de 0 a -50%, ou seja, exatamente uma metade.
 function buildSequence(): { type: "text" | "dot"; value: string }[] {
   const seq: { type: "text" | "dot"; value: string }[] = [];
   for (const item of ITEMS) {
@@ -29,10 +27,7 @@ export function Marquee() {
               {entry.value}
             </span>
           ) : (
-            <span
-              key={i}
-              className="text-[1.1rem] not-italic text-accent flex-shrink-0"
-            >
+            <span key={i} className="text-[1.1rem] text-accent flex-shrink-0">
               {entry.value}
             </span>
           )

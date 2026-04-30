@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Variáveis globais (espelham o prototipo aprovado) ───────── */
+/* ═══════════════════════════════════════════════════════════════════
+   PALETA E TOKENS
+   ═══════════════════════════════════════════════════════════════════ */
 :root {
   --cream: #faf8f4;
   --ink: #2e2820;
@@ -10,6 +12,11 @@
   --warm-light: #ddd4c8;
   --accent: #c9a882;
   --section-dark: #3c3228;
+
+  /* Curvas de easing partilhadas — mantém coerência cinética */
+  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 * {
@@ -34,32 +41,139 @@ body {
   }
 }
 
-/* ─── Reveal on scroll ────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   KEYFRAMES — todos definidos aqui (não no tailwind.config) para
+   sobreviverem ao tree-shaking do JIT.
+   ═══════════════════════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulseRing {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 0.3;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ANIMAÇÃO: FADE-UP STAGGERED (Hero, headers de secção)
+   Aplica fadeUp a partir do estado inicial com delay configurável
+   por data-delay attribute ou class .delay-N.
+   ═══════════════════════════════════════════════════════════════════ */
+.anim-fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fadeUp 0.8s var(--ease-out) forwards;
+}
+.anim-fade-up.delay-1 {
+  animation-delay: 0.2s;
+}
+.anim-fade-up.delay-2 {
+  animation-delay: 0.4s;
+}
+.anim-fade-up.delay-3 {
+  animation-delay: 0.6s;
+}
+.anim-fade-up.delay-4 {
+  animation-delay: 0.8s;
+}
+
+.anim-fade-in {
+  opacity: 0;
+  animation: fadeIn 1s var(--ease-out) forwards;
+}
+.anim-fade-in.delay-1 {
+  animation-delay: 0.3s;
+}
+.anim-fade-in.delay-2 {
+  animation-delay: 0.5s;
+}
+.anim-fade-in.delay-3 {
+  animation-delay: 0.7s;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ANIMAÇÃO: REVEAL ON SCROLL
+   Estado inicial invisível; quando entra no viewport, IntersectionObserver
+   adiciona .visible e dispara a transição.
+   ═══════════════════════════════════════════════════════════════════ */
 .reveal {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
 }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* ─── Marquee continuous ─────────────────────────────────────── */
-/* Os keyframes ficam definidos AQUI (não no tailwind.config) porque
-   o JIT do Tailwind purga keyframes que não são usados via animate-*.
-   Como referenciamos `animation: marquee` diretamente em CSS plano,
-   precisamos da definição no mesmo ficheiro para garantir que
-   sobrevive ao build de produção. */
-@keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+/* Variante com scale subtil — útil para imagens grandes */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 0.9s var(--ease-out),
+    transform 0.9s var(--ease-out);
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
 }
 
+/* Variante clip-path — descobre a imagem de baixo para cima */
+.reveal-clip {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.1s var(--ease-out);
+}
+.reveal-clip.visible {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MARQUEE — banda contínua na secção entre Hero e Gallery
+   ═══════════════════════════════════════════════════════════════════ */
 .marquee-band {
   background: var(--section-dark);
   padding: 1rem 0;
@@ -69,13 +183,17 @@ body {
 .marquee-inner {
   display: inline-flex;
   gap: 3rem;
-  /* 40s dá uma cadência elegante e contemplativa, não "ticker de bolsa".
-     20s era demasiado rápido para o tom editorial do site. */
+  /* 40s = cadência editorial. Pause on hover dá controlo ao utilizador. */
   animation: marquee 40s linear infinite;
   will-change: transform;
 }
+.marquee-band:hover .marquee-inner {
+  animation-play-state: paused;
+}
 
-/* ─── Botão primário com swipe accent ─────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   BOTÃO PRIMÁRIO — swipe horizontal accent + lift sutil
+   ═══════════════════════════════════════════════════════════════════ */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -88,8 +206,10 @@ body {
   padding: 0.9rem 2rem;
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s var(--ease-out);
   text-decoration: none;
+  border: none;
+  cursor: pointer;
 }
 .btn-primary::before {
   content: "";
@@ -97,7 +217,7 @@ body {
   inset: 0;
   background: var(--accent);
   transform: translateX(-101%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s var(--ease-out);
 }
 .btn-primary:hover::before {
   transform: translateX(0);
@@ -110,12 +230,255 @@ body {
   z-index: 1;
 }
 
-/* ─── Reduced motion respeito ─────────────────────────────────── */
+/* Botão secundário — texto-link com gap que cresce no hover */
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-mid);
+  text-decoration: none;
+  transition:
+    color 0.3s var(--ease-out),
+    gap 0.3s var(--ease-out);
+}
+.btn-link:hover {
+  color: var(--ink);
+  gap: 0.9rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   NAV — links com underline accent que se expande
+   ═══════════════════════════════════════════════════════════════════ */
+.nav-link {
+  position: relative;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--warm-mid);
+  text-decoration: none;
+  transition: color 0.3s var(--ease-out);
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease-out);
+}
+.nav-link:hover {
+  color: var(--ink);
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SERVICE CARD — pseudo-element brown rising from bottom
+   ═══════════════════════════════════════════════════════════════════ */
+.service-card {
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 2rem;
+  border: 1px solid var(--warm-light);
+  transition: border-color 0.4s var(--ease-out);
+}
+.service-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--section-dark);
+  transform: translateY(101%);
+  transition: transform 0.55s var(--ease-out);
+  z-index: 0;
+}
+.service-card:hover::before {
+  transform: translateY(0);
+}
+.service-card:hover {
+  border-color: var(--section-dark);
+}
+.service-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Cores dos textos dentro do card que mudam no hover */
+.service-card .s-num {
+  color: var(--warm-light);
+  transition: color 0.4s var(--ease-out);
+}
+.service-card:hover .s-num {
+  color: rgba(201, 168, 130, 0.25);
+}
+.service-card .s-name {
+  color: var(--ink);
+  transition: color 0.4s var(--ease-out);
+}
+.service-card:hover .s-name {
+  color: var(--cream);
+}
+.service-card .s-desc {
+  color: var(--warm-mid);
+  transition: color 0.4s var(--ease-out);
+}
+.service-card:hover .s-desc {
+  color: rgba(250, 248, 244, 0.55);
+}
+.service-card .s-price-label {
+  color: var(--warm-mid);
+  transition: color 0.4s var(--ease-out);
+}
+.service-card:hover .s-price-label {
+  color: rgba(250, 248, 244, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GALLERY ITEM — overlay sobe + zoom subtil + meta fade-up
+   ═══════════════════════════════════════════════════════════════════ */
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+}
+.gallery-item .gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.85s var(--ease-out);
+}
+.gallery-item:hover .gallery-img {
+  transform: scale(1.06);
+}
+.gallery-item .gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(46, 40, 32, 0);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem;
+  transition: background 0.45s var(--ease-out);
+}
+.gallery-item:hover .gallery-overlay {
+  background: rgba(46, 40, 32, 0.48);
+}
+.gallery-item .gallery-meta {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.4s var(--ease-out) 0.05s,
+    transform 0.4s var(--ease-out) 0.05s;
+}
+.gallery-item:hover .gallery-meta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Filter buttons */
+.filter-btn {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-mid);
+  background: transparent;
+  border: 1px solid var(--warm-light);
+  padding: 0.5rem 1.2rem;
+  transition: all 0.3s var(--ease-out);
+  cursor: pointer;
+}
+.filter-btn:hover,
+.filter-btn.active {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO IMG — hover scale 1.04 (mais subtil que gallery)
+   ═══════════════════════════════════════════════════════════════════ */
+.hero-tile {
+  position: relative;
+  overflow: hidden;
+}
+.hero-tile-inner {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.85s var(--ease-out);
+}
+.hero-tile:hover .hero-tile-inner {
+  transform: scale(1.04);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ABOUT PORTRAIT — scale subtil + frame deslocado
+   ═══════════════════════════════════════════════════════════════════ */
+.about-portrait {
+  position: relative;
+  overflow: hidden;
+}
+.about-portrait-img {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.85s var(--ease-out);
+}
+.about-portrait:hover .about-portrait-img {
+  transform: scale(1.03);
+}
+.about-portrait-frame {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  right: -1.5rem;
+  bottom: -1.5rem;
+  border: 1px solid rgba(201, 168, 130, 0.3);
+  pointer-events: none;
+  transition: transform 0.6s var(--ease-out);
+}
+.about-portrait:hover .about-portrait-frame {
+  transform: translate(-0.5rem, -0.5rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BLOG CARD — image zoom + título muda para accent no hover
+   ═══════════════════════════════════════════════════════════════════ */
+.blog-card .blog-thumb-img {
+  transition: transform 0.75s var(--ease-out);
+}
+.blog-card:hover .blog-thumb-img {
+  transform: scale(1.05);
+}
+.blog-card .blog-title {
+  transition: color 0.3s var(--ease-out);
+}
+.blog-card:hover .blog-title {
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOOTER SOCIAL LINK — color shift simples
+   ═══════════════════════════════════════════════════════════════════ */
+.footer-link {
+  color: rgba(250, 248, 244, 0.4);
+  transition: color 0.3s var(--ease-out);
+}
+.footer-link:hover {
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ACESSIBILIDADE — respeitar prefers-reduced-motion
+   ═══════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

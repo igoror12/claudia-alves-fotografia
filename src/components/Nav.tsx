@@ -18,10 +18,7 @@ export function Nav() {
           ["Contacto", "#contact"],
         ].map(([label, href]) => (
           <li key={href}>
-            <a
-              href={href}
-              className="relative text-xs uppercase tracking-[0.15em] text-warm-mid hover:text-ink transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-[width] after:duration-[400ms] hover:after:w-full"
-            >
+            <a href={href} className="nav-link">
               {label}
             </a>
           </li>
