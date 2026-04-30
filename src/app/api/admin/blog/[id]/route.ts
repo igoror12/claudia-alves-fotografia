@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 const PatchSchema = z.object({
@@ -27,10 +26,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-  }
+  const { response } = await requireAdminSession();
+  if (response) return response;
 
   let body: unknown;
   try {
@@ -80,10 +77,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-  }
+  const { response } = await requireAdminSession();
+  if (response) return response;
   await prisma.blogPost.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
 }

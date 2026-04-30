@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 const PostSchema = z.object({
@@ -27,10 +26,8 @@ const PostSchema = z.object({
  * Cria um novo post associado ao admin atualmente autenticado.
  */
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-  }
+  const { session, response } = await requireAdminSession();
+  if (response) return response;
 
   const userId = (session.user as { id?: string }).id;
   if (!userId) {

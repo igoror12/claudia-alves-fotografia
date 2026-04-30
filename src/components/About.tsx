@@ -1,7 +1,7 @@
 export function About() {
   return (
     <section
-      className="px-12 py-24 bg-section-dark grid md:grid-cols-2 gap-24 items-center"
+      className="px-6 py-20 sm:px-12 sm:py-24 bg-section-dark grid md:grid-cols-2 gap-12 md:gap-24 items-center"
       id="about"
     >
       <div className="about-portrait reveal aspect-[3/4]">

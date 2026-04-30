@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="bg-section-dark px-12 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer className="bg-section-dark px-6 py-10 sm:px-12 sm:py-12 flex flex-col md:flex-row justify-between items-center gap-6">
       <div className="font-serif text-lg font-light text-cream tracking-[0.06em]">
         Cláudia Alves <span className="italic text-accent">Fotografia</span>
       </div>

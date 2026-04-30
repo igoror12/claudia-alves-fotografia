@@ -28,7 +28,7 @@ export function Gallery({ photos, categories }: Props) {
   );
 
   return (
-    <section className="px-12 py-24" id="portfolio">
+    <section className="px-6 py-20 sm:px-12 sm:py-24" id="portfolio">
       <header className="reveal flex justify-between items-end mb-12 flex-wrap gap-6">
         <div>
           <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">

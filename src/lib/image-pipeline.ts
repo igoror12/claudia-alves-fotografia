@@ -7,8 +7,8 @@ import { put } from "@vercel/blob";
 // - medium:  1200px → cards normais, hero individual, ~250-400KB
 // - full:    2400px → lightbox/zoom em ecrãs Retina/4K, ~800KB-1.2MB
 //
-// O original também é guardado (privado, sem transformação) — útil para
-// reprocessar variantes no futuro se mudarmos formatos/qualidades.
+// Os originais só são guardados se STORE_ORIGINAL_UPLOADS=true. O Vercel Blob
+// expõe ficheiros publicamente, por isso o modo seguro é guardar só variantes.
 const VARIANTS = [
   { name: "thumb", width: 400, quality: 75 },
   { name: "medium", width: 1200, quality: 82 },
@@ -19,7 +19,7 @@ export type ProcessedImage = {
   thumbUrl: string;
   mediumUrl: string;
   fullUrl: string;
-  originalUrl: string;
+  originalUrl?: string;
   blurDataUrl: string;
   width: number;
   height: number;
@@ -33,7 +33,7 @@ export type ProcessedImage = {
 
 /**
  * Processa um upload de fotografia gerando 3 variantes WebP responsive,
- * preservando o original, criando blur placeholder e extraindo EXIF.
+ * criando blur placeholder e extraindo EXIF.
  *
  * Estratégia de qualidade:
  * - WebP em vez de JPEG → ~30% menor com qualidade visualmente equivalente
@@ -87,28 +87,31 @@ export async function processAndUploadPhoto(
     .toBuffer();
   const blurDataUrl = `data:image/webp;base64,${blurBuf.toString("base64")}`;
 
-  // Original (sem transformação) para arquivo
+  // Nome seguro para variantes e, opcionalmente, para o original.
   const safeName = originalFilename
     .replace(/[^a-zA-Z0-9._-]/g, "-")
     .toLowerCase();
   const stamp = Date.now();
 
   // ─── Upload paralelo para Vercel Blob ──────────────────────────
-  const uploads = await Promise.all([
-    ...variantBuffers.map((v) =>
+  const uploadOriginal = process.env.STORE_ORIGINAL_UPLOADS === "true";
+  const variantUploads = await Promise.all(
+    variantBuffers.map((v) =>
       put(`photos/${stamp}-${v.name}-${safeName}.webp`, v.buf, {
         access: "public",
         contentType: "image/webp",
         cacheControlMaxAge: 60 * 60 * 24 * 365, // 1 ano (URLs são imutáveis)
       })
-    ),
-    put(`photos/originals/${stamp}-${safeName}`, file, {
-      access: "public", // ainda público mas com URL não-listável
-      contentType: metadata.format ? `image/${metadata.format}` : "image/jpeg",
-    }),
-  ]);
+    )
+  );
+  const original = uploadOriginal
+    ? await put(`photos/originals/${stamp}-${safeName}`, file, {
+        access: "public",
+        contentType: metadata.format ? `image/${metadata.format}` : "image/jpeg",
+      })
+    : null;
 
-  const [thumb, medium, full, original] = uploads;
+  const [thumb, medium, full] = variantUploads;
 
   // ─── EXIF útil para mostrar credibilidade ──────────────────────
   const exif = parseExif(metadata);
@@ -117,7 +120,7 @@ export async function processAndUploadPhoto(
     thumbUrl: thumb.url,
     mediumUrl: medium.url,
     fullUrl: full.url,
-    originalUrl: original.url,
+    originalUrl: original?.url,
     blurDataUrl,
     width: metadata.width,
     height: metadata.height,

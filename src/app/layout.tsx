@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Figtree } from "next/font/google";
 import "@/styles/globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudiaalves.pt";
+
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-serif",
@@ -18,6 +20,7 @@ const sans = Figtree({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Cláudia Alves Fotografia · Retratos, Casamentos e Eventos em Braga",
     template: "%s · Cláudia Alves Fotografia",

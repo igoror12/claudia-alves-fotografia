@@ -15,8 +15,8 @@ const config: Config = {
         "section-dark": "#3C3228",
       },
       fontFamily: {
-        serif: ['"Cormorant Garamond"', "serif"],
-        sans: ['"Figtree"', "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
     },
   },

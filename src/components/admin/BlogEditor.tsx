@@ -146,7 +146,7 @@ export function BlogEditor({ post }: Props) {
           className="w-full bg-transparent border-b border-warm-light focus:border-accent outline-none py-2 text-sm"
         />
         <span className="text-[0.65rem] text-warm-mid mt-1 block">
-          Cola o URL "medium" duma foto que esteja no admin de fotografias.
+          Cola o URL &quot;medium&quot; duma foto que esteja no admin de fotografias.
         </span>
       </Field>
 

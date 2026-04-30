@@ -6,11 +6,11 @@ type Props = { featured: Photo[] };
 export function Hero({ featured }: Props) {
   return (
     <section className="hero min-h-screen grid md:grid-cols-2 overflow-hidden">
-      <div className="flex flex-col justify-center px-12 pt-32 pb-16 relative z-[2]">
-        <p className="anim-fade-up delay-1 text-[0.7rem] uppercase tracking-[0.3em] text-accent mb-8">
+      <div className="flex flex-col justify-center px-6 pt-32 pb-16 sm:px-12 relative z-[2]">
+        <p className="anim-fade-up delay-1 text-[0.68rem] uppercase tracking-[0.18em] sm:tracking-[0.3em] text-accent mb-8 max-w-full">
           Fotografia de arte e memória
         </p>
-        <h1 className="anim-fade-up delay-2 font-serif text-[clamp(3.5rem,6vw,5.5rem)] font-light leading-[1.05] -tracking-[0.02em] mb-8">
+        <h1 className="anim-fade-up delay-2 font-serif text-[clamp(2.75rem,15vw,5.5rem)] font-light leading-[1.05] mb-8 max-w-full">
           Cada momento
           <br />
           <em className="italic text-warm-mid block">é eterno</em>
@@ -20,7 +20,7 @@ export function Hero({ featured }: Props) {
           Especialista em retratos, casamentos e eventos. Capturo a emoção
           autêntica e a beleza fugaz dos momentos que merecem durar para sempre.
         </p>
-        <div className="anim-fade-up delay-4 flex items-center gap-8">
+        <div className="anim-fade-up delay-4 flex flex-wrap items-center gap-5 sm:gap-8">
           <a href="#portfolio" className="btn-primary">
             <span>Ver Portfolio</span>
             <span>→</span>

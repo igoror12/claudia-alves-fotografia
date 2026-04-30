@@ -14,7 +14,7 @@ function formatDate(d: Date | null) {
 
 export function Blog({ posts }: { posts: BlogPost[] }) {
   return (
-    <section className="px-12 py-24 bg-[#F4F0EA]" id="blog">
+    <section className="px-6 py-20 sm:px-12 sm:py-24 bg-[#F4F0EA]" id="blog">
       <header className="reveal mb-12">
         <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
           Reflexões & histórias

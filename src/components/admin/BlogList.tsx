@@ -25,7 +25,7 @@ export function BlogList({ posts }: { posts: PostWithAuthor[] }) {
   if (posts.length === 0) {
     return (
       <p className="text-sm text-warm-mid italic">
-        Ainda sem posts. Clica em "+ Novo post" para começar.
+        Ainda sem posts. Clica em &quot;+ Novo post&quot; para começar.
       </p>
     );
   }

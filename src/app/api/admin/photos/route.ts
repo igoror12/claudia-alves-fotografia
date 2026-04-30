@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { processAndUploadPhoto } from "@/lib/image-pipeline";
 import { generatePhotoMetadata, categorizePhoto } from "@/lib/ai";
@@ -32,10 +31,8 @@ const PostSchema = z.object({
  * 4. Persiste no Postgres
  */
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-  }
+  const { response } = await requireAdminSession();
+  if (response) return response;
 
   const form = await req.formData();
   const file = form.get("file");
@@ -49,7 +46,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const fields = PostSchema.parse(Object.fromEntries(form.entries()));
+  const parsed = PostSchema.safeParse(Object.fromEntries(form.entries()));
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? "Pedido invalido." },
+      { status: 400 }
+    );
+  }
+  const fields = parsed.data;
   const buffer = Buffer.from(await file.arrayBuffer());
 
   // 1. Processa e faz upload das variantes
@@ -116,10 +120,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-  }
+  const { response } = await requireAdminSession();
+  if (response) return response;
 
   const photos = await prisma.photo.findMany({
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],

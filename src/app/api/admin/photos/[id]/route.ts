@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { del } from "@vercel/blob";
@@ -21,11 +20,18 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+  const { response } = await requireAdminSession();
+  if (response) return response;
+
+  const parsed = PatchSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? "Pedido invalido." },
+      { status: 400 }
+    );
   }
-  const data = PatchSchema.parse(await req.json());
+
+  const data = parsed.data;
   const photo = await prisma.photo.update({ where: { id: params.id }, data });
   return NextResponse.json({ photo });
 }
@@ -34,10 +40,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-  }
+  const { response } = await requireAdminSession();
+  if (response) return response;
 
   const photo = await prisma.photo.findUnique({ where: { id: params.id } });
   if (!photo) return NextResponse.json({ ok: true });

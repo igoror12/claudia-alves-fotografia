@@ -22,6 +22,26 @@ type PhotoWithCat = Prisma.PhotoGetPayload<{ include: { category: true } }>;
 type Post = Prisma.BlogPostGetPayload<object>;
 type Cat = Prisma.CategoryGetPayload<object>;
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(
+      () => reject(new Error(`${label} excedeu ${ms}ms`)),
+      ms
+    );
+
+    promise.then(
+      (value) => {
+        clearTimeout(timeout);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      }
+    );
+  });
+}
+
 /**
  * Busca os dados da homepage tolerando DB vazia ou inexistente.
  *
@@ -39,26 +59,30 @@ async function safeFetchHomeData(): Promise<{
   categories: Cat[];
 }> {
   try {
-    const [featured, gallery, posts, categories] = await Promise.all([
-      prisma.photo.findMany({
-        where: { featured: true, published: true },
-        orderBy: { order: "asc" },
-        take: 3,
-        include: { category: true },
-      }),
-      prisma.photo.findMany({
-        where: { published: true },
-        orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-        take: 6,
-        include: { category: true },
-      }),
-      prisma.blogPost.findMany({
-        where: { published: true },
-        orderBy: { publishedAt: "desc" },
-        take: 3,
-      }),
-      prisma.category.findMany({ orderBy: { order: "asc" } }),
-    ]);
+    const [featured, gallery, posts, categories] = await withTimeout(
+      Promise.all([
+        prisma.photo.findMany({
+          where: { featured: true, published: true },
+          orderBy: { order: "asc" },
+          take: 3,
+          include: { category: true },
+        }),
+        prisma.photo.findMany({
+          where: { published: true },
+          orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+          take: 6,
+          include: { category: true },
+        }),
+        prisma.blogPost.findMany({
+          where: { published: true },
+          orderBy: { publishedAt: "desc" },
+          take: 3,
+        }),
+        prisma.category.findMany({ orderBy: { order: "asc" } }),
+      ]),
+      2500,
+      "homepage DB fetch"
+    );
     return { featured, gallery, posts, categories };
   } catch (e) {
     // DB ainda não migrada / unreachable. Log para debug e fallback vazio.

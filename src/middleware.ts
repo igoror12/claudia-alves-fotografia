@@ -20,7 +20,7 @@ export default withAuth({
       // /admin/login é público — sem isto entramos em loop
       if (req.nextUrl.pathname === "/admin/login") return true;
       // Restantes rotas /admin/* exigem sessão válida
-      return !!token;
+      return token?.role === "ADMIN" || token?.role === "EDITOR";
     },
   },
 });

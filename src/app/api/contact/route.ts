@@ -99,8 +99,9 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // IA + email em paralelo, best-effort
-  void enrichAndNotify(created.id, {
+  // IA + email best-effort. Aguardamos aqui porque em serverless trabalho
+  // "fire-and-forget" pode ser interrompido depois da resposta HTTP.
+  await enrichAndNotify(created.id, {
     name: data.name,
     email: data.email,
     sessionType: data.sessionType,
@@ -124,11 +125,22 @@ async function enrichAndNotify(
 ) {
   try {
     // 1. Resumo + estimativa com Claude
-    const ai = await summarizeContactRequest(payload);
-    await prisma.contactRequest.update({
-      where: { id: requestId },
-      data: { aiSummary: ai.summary, aiEstimate: ai.estimate },
-    });
+    let ai = {
+      summary: "Pedido recebido - sem resumo automatico.",
+      estimate: "A definir apos briefing.",
+    };
+
+    if (process.env.ANTHROPIC_API_KEY) {
+      try {
+        ai = await summarizeContactRequest(payload);
+        await prisma.contactRequest.update({
+          where: { id: requestId },
+          data: { aiSummary: ai.summary, aiEstimate: ai.estimate },
+        });
+      } catch (e) {
+        console.error("[contact:ai]", e);
+      }
+    }
 
     // 2. Email opcional (só envia se RESEND_API_KEY estiver configurada)
     const resendKey = process.env.RESEND_API_KEY;
@@ -138,9 +150,9 @@ async function enrichAndNotify(
     const subject = `Novo contacto · ${payload.sessionType} · ${payload.name}`;
     const html = `
       <h2 style="font-family:Georgia,serif">Novo pedido de contacto</h2>
-      <p><strong>${payload.name}</strong> &lt;${payload.email}&gt;</p>
-      <p><em>Sessão:</em> ${payload.sessionType}<br/>
-         <em>Data pretendida:</em> ${payload.desiredDate ?? "—"}</p>
+      <p><strong>${escapeHtml(payload.name)}</strong> &lt;${escapeHtml(payload.email)}&gt;</p>
+      <p><em>Sessao:</em> ${escapeHtml(payload.sessionType)}<br/>
+         <em>Data pretendida:</em> ${escapeHtml(payload.desiredDate ?? "-")}</p>
       <hr/>
       <p style="white-space:pre-wrap">${escapeHtml(payload.message)}</p>
       <hr/>
