@@ -36,7 +36,7 @@ export function Gallery({ photos, categories }: Props) {
           <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
             Trabalhos selecionados
           </p>
-          <h2 className="font-serif text-5xl font-light leading-[1.1] text-ink">
+          <h2 className="font-serif text-[2.8rem] font-light leading-[1.1] text-ink">
             Portfolio
             <br />
             <em className="italic text-warm-mid">recente</em>

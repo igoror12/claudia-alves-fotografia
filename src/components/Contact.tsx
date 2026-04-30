@@ -34,7 +34,7 @@ export function Contact() {
         <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
           Contacto
         </p>
-        <h2 className="font-serif text-5xl font-light leading-[1.1]">
+        <h2 className="font-serif text-[2.8rem] font-light leading-[1.1]">
           Vamos criar
           <br />
           <em className="italic text-warm-mid">algo juntos?</em>
@@ -90,7 +90,7 @@ export function Contact() {
       </div>
 
       <aside className="reveal mt-12">
-        <h3 className="font-serif text-3xl font-light italic text-ink mb-6 leading-[1.25]">
+        <h3 className="font-serif text-[2rem] font-light italic text-ink mb-6 leading-[1.25]">
           Cada história merece ser contada com cuidado e atenção
         </h3>
         <p className="text-sm leading-[1.9] text-warm-mid mb-10">

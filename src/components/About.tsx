@@ -13,13 +13,13 @@ export function About() {
         <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
           Sobre mim
         </p>
-        <h2 className="font-serif text-5xl font-light leading-[1.1] mb-8">
+        <h2 className="font-serif text-[2.8rem] font-light leading-[1.1] mb-8">
           A arte de
           <br />
           <em className="italic text-warm-mid">ver diferente</em>
         </h2>
 
-        <p className="text-sm leading-[1.9] text-cream/60 mb-6">
+        <p className="text-[0.9rem] leading-[1.9] text-cream/60 mb-6">
           Nasci em Braga com uma câmara imaginária nas mãos — pelo menos é assim
           que a minha mãe gosta de contar. Desde criança que me fascinava a
           ideia de parar o tempo, de guardar numa imagem aquilo que as palavras
@@ -27,21 +27,21 @@ export function About() {
           partilhado entre duas pessoas, a luz que entra pela janela às três da
           tarde de um domingo de inverno.
         </p>
-        <p className="text-sm leading-[1.9] text-cream/60 mb-6">
+        <p className="text-[0.9rem] leading-[1.9] text-cream/60 mb-6">
           Estudei fotografia no Porto e passei os primeiros anos da minha
           carreira a fotografar tudo e todos — festivais de música, editoriais
           de moda, retratos de rua. Foi nessa imensidão que percebi o que
           realmente me move: as pessoas. A autenticidade dos momentos que
           acontecem quando alguém se esquece que está a ser fotografado.
         </p>
-        <p className="text-sm leading-[1.9] text-cream/60 mb-6">
+        <p className="text-[0.9rem] leading-[1.9] text-cream/60 mb-6">
           Hoje, com mais de seis anos de experiência, trabalho com casais,
           famílias e empresas em todo o norte de Portugal. A minha abordagem é
           discreta, quase invisível — porque acredito que as melhores
           fotografias nascem da confiança, não da pose.
         </p>
 
-        <div className="font-serif text-2xl italic font-light text-accent my-8 tracking-[0.03em]">
+        <div className="font-serif text-[1.6rem] italic font-light text-accent my-8 tracking-[0.03em]">
           Cláudia Alves
         </div>
 
@@ -52,7 +52,7 @@ export function About() {
             ["5★", "Avaliação média"],
           ].map(([num, label]) => (
             <div key={label}>
-              <div className="font-serif text-4xl font-light text-accent leading-none mb-1">
+              <div className="font-serif text-[2.5rem] font-light text-accent leading-none mb-1">
                 {num}
               </div>
               <div className="text-[0.7rem] uppercase tracking-[0.15em] text-cream/40">

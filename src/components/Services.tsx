@@ -31,7 +31,7 @@ export function Services() {
         <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
           Investimento
         </p>
-        <h2 className="font-serif text-5xl font-light leading-[1.1]">
+        <h2 className="font-serif text-[2.8rem] font-light leading-[1.1]">
           Serviços &<br />
           <em className="italic text-warm-mid">preços</em>
         </h2>
@@ -44,16 +44,16 @@ export function Services() {
             className="reveal group relative overflow-hidden border border-warm-light hover:border-section-dark transition-colors p-12 before:content-[''] before:absolute before:inset-0 before:bg-section-dark before:translate-y-full hover:before:translate-y-0 before:transition-transform before:duration-[500ms] before:ease-[cubic-bezier(0.4,0,0.2,1)]"
           >
             <div className="relative z-[1]">
-              <div className="font-serif text-6xl font-light text-warm-light group-hover:text-accent/25 leading-none mb-6 transition-colors">
+              <div className="font-serif text-[4rem] font-light text-warm-light group-hover:text-accent/25 leading-none mb-6 transition-colors">
                 {s.number}
               </div>
-              <h3 className="font-serif text-2xl font-light text-ink group-hover:text-cream mb-4 transition-colors">
+              <h3 className="font-serif text-[1.5rem] font-light text-ink group-hover:text-cream mb-4 transition-colors">
                 {s.name}
               </h3>
               <p className="text-[0.82rem] leading-[1.8] text-warm-mid group-hover:text-cream/55 mb-8 transition-colors">
                 {s.desc}
               </p>
-              <div className="font-serif text-3xl font-light text-accent flex items-baseline gap-1">
+              <div className="font-serif text-[1.8rem] font-light text-accent flex items-baseline gap-1">
                 <span>{s.price}</span>
                 <span className="font-sans text-[0.7rem] uppercase tracking-[0.1em] text-warm-mid group-hover:text-cream/40 transition-colors">
                   {s.label}

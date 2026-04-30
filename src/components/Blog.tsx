@@ -19,7 +19,7 @@ export function Blog({ posts }: { posts: BlogPost[] }) {
         <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
           Reflexões & histórias
         </p>
-        <h2 className="font-serif text-5xl font-light leading-[1.1]">
+        <h2 className="font-serif text-[2.8rem] font-light leading-[1.1]">
           Do meu
           <br />
           <em className="italic text-warm-mid">diário visual</em>
@@ -52,7 +52,7 @@ export function Blog({ posts }: { posts: BlogPost[] }) {
             <div className="text-[0.65rem] uppercase tracking-[0.2em] text-accent mb-2">
               {post.category}
             </div>
-            <h3 className="font-serif text-2xl font-light leading-[1.3] mb-3 text-ink group-hover:text-accent transition-colors">
+            <h3 className="font-serif text-[1.4rem] font-light leading-[1.3] mb-3 text-ink group-hover:text-accent transition-colors">
               {post.title}
             </h3>
             <p className="text-[0.82rem] leading-[1.7] text-warm-mid mb-4">
