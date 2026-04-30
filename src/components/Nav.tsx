@@ -1,8 +1,32 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
+/**
+ * Nav scroll-aware: no topo é transparente com gradiente cream → fade.
+ * Após scroll > 80px torna-se sólida com blur (padrão das revistas
+ * editoriais premium tipo Aperture, Magnum).
+ *
+ * O threshold de 80px é deliberadamente baixo — assim que o utilizador
+ * começa a explorar a página, a nav consolida-se e fica legível.
+ */
 export function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll(); // estado inicial (caso entre num scroll-restore)
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] flex justify-between items-center bg-cream/95 px-6 py-6 shadow-[0_1px_0_rgba(221,212,200,0.35)] backdrop-blur-sm sm:px-12 sm:py-8">
+    <nav
+      className={`nav-bar flex justify-between items-center px-6 sm:px-12 ${
+        scrolled ? "py-4 sm:py-5 scrolled" : "py-6 sm:py-8"
+      }`}
+    >
       <Link
         href="/"
         className="font-serif text-xl font-light tracking-[0.06em] text-ink"

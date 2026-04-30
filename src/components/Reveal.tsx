@@ -8,7 +8,7 @@ export function Reveal() {
   useEffect(() => {
     const revealElements = () =>
       document.querySelectorAll<HTMLElement>(
-        ".reveal:not(.visible), .reveal-scale:not(.visible), .reveal-clip:not(.visible)"
+        ".reveal:not(.visible), .reveal-scale:not(.visible), .reveal-clip:not(.visible), .reveal-left:not(.visible), .reveal-right:not(.visible), .section-divider:not(.visible), .gallery-item:not(.visible)"
       );
 
     if (!("IntersectionObserver" in window)) {

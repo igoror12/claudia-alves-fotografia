@@ -36,8 +36,11 @@ export function Services() {
       </header>
 
       <div className="grid md:grid-cols-3 gap-[2px]">
-        {SERVICES.map((s) => (
-          <article key={s.number} className="service-card reveal">
+        {SERVICES.map((s, i) => (
+          <article
+            key={s.number}
+            className={`service-card reveal stagger-${i + 1}`}
+          >
             <div className="s-num font-serif text-[4rem] font-light leading-none mb-6">
               {s.number}
             </div>

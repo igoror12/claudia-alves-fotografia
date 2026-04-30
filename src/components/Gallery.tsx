@@ -65,7 +65,8 @@ export function Gallery({ photos, categories }: Props) {
         {visible.slice(0, 6).map((photo, i) => (
           <div
             key={photo.id}
-            className={`gallery-item reveal ${SPAN_CLASSES[i] ?? "col-span-4 aspect-[4/3]"}`}
+            className={`gallery-item gallery-item-link reveal stagger-${(i % 6) + 1} ${SPAN_CLASSES[i] ?? "col-span-4 aspect-[4/3]"}`}
+            data-cursor="ver"
           >
             <Image
               src={photo.mediumUrl}

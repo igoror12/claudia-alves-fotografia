@@ -95,6 +95,40 @@ body {
   }
 }
 
+/* Hero zoom-on-load: cinematográfico ao carregar a página, escala do conteúdo
+   de 1.04 para 1 numa só passagem. NÃO em loop — single-shot na entrada. */
+@keyframes heroZoomIn {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Drift subtil para os tiles do hero quando NÃO em hover. Movimento mínimo
+   (4px) num ciclo lento de 18s — dá sensação de respiração sem distrair. */
+@keyframes heroDrift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-3px, -2px);
+  }
+}
+
+/* Section divider — linha 1px que cresce de 0% a 100% width quando entra
+   no viewport (via .visible adicionado pelo Reveal). */
+@keyframes drawLine {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    ANIMAÇÃO: FADE-UP STAGGERED (Hero, headers de secção)
    Aplica fadeUp a partir do estado inicial com delay configurável
@@ -169,6 +203,53 @@ body {
 }
 .reveal-clip.visible {
   clip-path: inset(0 0 0 0);
+}
+
+/* Reveal lateral — entra da esquerda. Útil para a foto do About. */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition:
+    opacity 0.85s var(--ease-out),
+    transform 0.85s var(--ease-out);
+}
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Reveal lateral — entra da direita. Para o texto do About. */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition:
+    opacity 0.85s var(--ease-out),
+    transform 0.85s var(--ease-out);
+}
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger delays para items dentro de grids (galeria, services).
+   Aplica-se em conjunto com .reveal: ex. <div class="reveal stagger-2">. */
+.reveal.stagger-1.visible {
+  transition-delay: 0.06s;
+}
+.reveal.stagger-2.visible {
+  transition-delay: 0.12s;
+}
+.reveal.stagger-3.visible {
+  transition-delay: 0.18s;
+}
+.reveal.stagger-4.visible {
+  transition-delay: 0.24s;
+}
+.reveal.stagger-5.visible {
+  transition-delay: 0.30s;
+}
+.reveal.stagger-6.visible {
+  transition-delay: 0.36s;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -398,18 +479,30 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   HERO IMG — hover scale 1.04 (mais subtil que gallery)
+   HERO IMG — entrada cinematográfica + drift contínuo subtil + hover scale
    ═══════════════════════════════════════════════════════════════════ */
 .hero-tile {
   position: relative;
   overflow: hidden;
+  /* Drift contínuo subtil — só visível quando NÃO em hover (regra abaixo). */
+  animation: heroDrift 18s ease-in-out infinite;
+  animation-delay: 1.6s; /* esperar o zoomIn terminar antes do drift começar */
 }
 .hero-tile-inner {
   width: 100%;
   height: 100%;
+  /* Zoom-on-load 1.04 → 1 ao carregar a página (cinematográfico). */
+  animation: heroZoomIn 1.5s var(--ease-out) both;
+  /* Override depois do zoom: a transição de hover. */
   transition: transform 0.85s var(--ease-out);
 }
+.hero-tile:hover {
+  /* Pausar o drift quando o utilizador está a observar a tile específica. */
+  animation-play-state: paused;
+}
 .hero-tile:hover .hero-tile-inner {
+  /* Hover scale (depois do zoomIn estar feito). */
+  animation: none;
   transform: scale(1.04);
 }
 
@@ -459,14 +552,138 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   FOOTER SOCIAL LINK — color shift simples
+   FOOTER SOCIAL LINK — ícone sobe 3px + cor passa a accent
    ═══════════════════════════════════════════════════════════════════ */
 .footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   color: rgba(250, 248, 244, 0.4);
-  transition: color 0.3s var(--ease-out);
+  transition:
+    color 0.3s var(--ease-out),
+    transform 0.3s var(--ease-out);
 }
 .footer-link:hover {
   color: var(--accent);
+  transform: translateY(-3px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SERVICE CARD — sombra subtil que aparece no hover (sem lift, para
+   não competir com o brown rising-up)
+   ═══════════════════════════════════════════════════════════════════ */
+.service-card {
+  transition:
+    border-color 0.4s var(--ease-out),
+    box-shadow 0.5s var(--ease-out);
+}
+.service-card:hover {
+  box-shadow: 0 24px 48px -16px rgba(46, 40, 32, 0.18);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   NAVBAR — estado scrolled (sólida com blur). Aplicado via JS quando
+   o scroll passa um threshold. No topo fica transparente com gradiente.
+   ═══════════════════════════════════════════════════════════════════ */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  transition:
+    background-color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    backdrop-filter 0.4s var(--ease-out),
+    padding 0.4s var(--ease-out);
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 248, 244, 0.97) 0%,
+    rgba(250, 248, 244, 0) 100%
+  );
+}
+.nav-bar.scrolled {
+  background: rgba(250, 248, 244, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 0 rgba(221, 212, 200, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION DIVIDER — linha hairline que se desenha quando entra no
+   viewport. Usar como <Divider /> entre secções para hierarquia visual.
+   ═══════════════════════════════════════════════════════════════════ */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--warm-light);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 1.2s var(--ease-out);
+}
+.section-divider.visible {
+  transform: scaleX(1);
+}
+.section-divider.center-origin {
+  transform-origin: center center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARALLAX SUBTIL — secção contact. O background-image usa
+   `background-attachment: fixed` no desktop para parallax nativo
+   sem JS. Em mobile fica scroll normal (fixed quebra performance).
+   ═══════════════════════════════════════════════════════════════════ */
+.parallax-bg {
+  position: relative;
+  isolation: isolate;
+}
+.parallax-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 20% 30%,
+      rgba(201, 168, 130, 0.06) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 80% 70%,
+      rgba(60, 50, 40, 0.04) 0%,
+      transparent 60%
+    );
+  z-index: -1;
+  pointer-events: none;
+}
+@media (min-width: 768px) and (hover: hover) {
+  .parallax-bg::before {
+    background-attachment: fixed;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CURSOR CUSTOM — variante "VER" quando hover em foto da galeria.
+   O .ver-text fica dentro do ring; aparece via opacity quando body
+   tem .cursor-view (ativado pelo Cursor.tsx).
+   ═══════════════════════════════════════════════════════════════════ */
+.cursor-ver-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9997;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cream);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s var(--ease-out);
+}
+body.cursor-view .cursor-ver-label {
+  opacity: 1;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

@@ -29,7 +29,7 @@ export function Contact() {
   }
 
   return (
-    <section className="px-6 py-20 sm:px-12 sm:py-24 grid md:grid-cols-2 gap-12 md:gap-24" id="contact">
+    <section className="parallax-bg px-6 py-20 sm:px-12 sm:py-24 grid md:grid-cols-2 gap-12 md:gap-24" id="contact">
       <div className="reveal">
         <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
           Contacto

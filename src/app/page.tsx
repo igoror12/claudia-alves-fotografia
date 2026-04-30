@@ -11,6 +11,7 @@ import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { Cursor } from "@/components/Cursor";
 import { Reveal } from "@/components/Reveal";
+import { Divider } from "@/components/Divider";
 
 // Revalida a homepage de 10 em 10 minutos para puxar fotos novas
 // sem precisar de redeploy. Compromisso entre frescura e cache.
@@ -102,8 +103,11 @@ export default async function HomePage() {
       <Hero featured={featured} />
       <Marquee />
       <Gallery photos={gallery} categories={categories} />
+      <Divider />
       <About />
+      <Divider />
       <Services />
+      <Divider />
       <Blog posts={posts} />
       <Contact />
       <Footer />

@@ -1,15 +1,20 @@
+/**
+ * About — reveal sincronizado: foto entra da esquerda, texto da direita.
+ * Ambos com o mesmo timing 0.85s ease-out, accionados quando a secção
+ * entra no viewport. Cria a sensação de duas peças que se encontram.
+ */
 export function About() {
   return (
     <section
       className="px-6 py-20 sm:px-12 sm:py-24 bg-section-dark grid md:grid-cols-2 gap-12 md:gap-24 items-center"
       id="about"
     >
-      <div className="about-portrait reveal aspect-[3/4]">
+      <div className="about-portrait reveal-left aspect-[3/4]">
         <div className="about-portrait-img bg-gradient-to-br from-[#5A4838] via-[#8C6A54] to-[#B28E74]" />
         <div className="about-portrait-frame" />
       </div>
 
-      <div className="reveal text-cream">
+      <div className="reveal-right text-cream">
         <p className="text-[0.7rem] uppercase tracking-[0.25em] text-accent mb-2">
           Sobre mim
         </p>
