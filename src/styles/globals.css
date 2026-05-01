@@ -173,10 +173,11 @@ body {
    ═══════════════════════════════════════════════════════════════════ */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(40px);
   transition:
-    opacity 0.7s var(--ease-out),
-    transform 0.7s var(--ease-out);
+    opacity 1s var(--ease-out),
+    transform 1s var(--ease-out);
+  will-change: opacity, transform;
 }
 .reveal.visible {
   opacity: 1;
@@ -186,10 +187,11 @@ body {
 /* Variante com scale subtil — útil para imagens grandes */
 .reveal-scale {
   opacity: 0;
-  transform: scale(0.96);
+  transform: scale(0.94);
   transition:
-    opacity 0.9s var(--ease-out),
-    transform 0.9s var(--ease-out);
+    opacity 1.1s var(--ease-out),
+    transform 1.1s var(--ease-out);
+  will-change: opacity, transform;
 }
 .reveal-scale.visible {
   opacity: 1;
@@ -199,19 +201,21 @@ body {
 /* Variante clip-path — descobre a imagem de baixo para cima */
 .reveal-clip {
   clip-path: inset(100% 0 0 0);
-  transition: clip-path 1.1s var(--ease-out);
+  transition: clip-path 1.2s var(--ease-out);
 }
 .reveal-clip.visible {
   clip-path: inset(0 0 0 0);
 }
 
-/* Reveal lateral — entra da esquerda. Útil para a foto do About. */
+/* Reveal lateral — entra da esquerda. Útil para a foto do About.
+   Translado de 60px (era 40) para a entrada ser claramente notada. */
 .reveal-left {
   opacity: 0;
-  transform: translateX(-40px);
+  transform: translateX(-60px);
   transition:
-    opacity 0.85s var(--ease-out),
-    transform 0.85s var(--ease-out);
+    opacity 1.1s var(--ease-out),
+    transform 1.1s var(--ease-out);
+  will-change: opacity, transform;
 }
 .reveal-left.visible {
   opacity: 1;
@@ -221,10 +225,11 @@ body {
 /* Reveal lateral — entra da direita. Para o texto do About. */
 .reveal-right {
   opacity: 0;
-  transform: translateX(40px);
+  transform: translateX(60px);
   transition:
-    opacity 0.85s var(--ease-out),
-    transform 0.85s var(--ease-out);
+    opacity 1.1s var(--ease-out),
+    transform 1.1s var(--ease-out);
+  will-change: opacity, transform;
 }
 .reveal-right.visible {
   opacity: 1;
@@ -596,17 +601,18 @@ body {
     box-shadow 0.4s var(--ease-out),
     backdrop-filter 0.4s var(--ease-out),
     padding 0.4s var(--ease-out);
-  background: linear-gradient(
-    to bottom,
-    rgba(250, 248, 244, 0.97) 0%,
-    rgba(250, 248, 244, 0) 100%
-  );
+  /* Estado base: cream translúcido com blur subtil (frosted glass).
+     Mantém legibilidade do hero por baixo sem competir visualmente. */
+  background: rgba(250, 248, 244, 0.7);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
 }
 .nav-bar.scrolled {
-  background: rgba(250, 248, 244, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 1px 0 rgba(221, 212, 200, 0.4);
+  /* Após scroll: cream mais opaco, blur mais forte, hairline shadow */
+  background: rgba(250, 248, 244, 0.94);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 1px 0 rgba(221, 212, 200, 0.5);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -687,15 +693,38 @@ body.cursor-view .cursor-ver-label {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   ACESSIBILIDADE — respeitar prefers-reduced-motion
+   ACESSIBILIDADE — prefers-reduced-motion
+   Versão CIRÚRGICA: desliga só animações em loop (marquee, drift, pulse)
+   e movimentos grandes (parallax). Mantém transitions de hover/reveal
+   com duração curta (200ms) para preservar feedback visual.
+   A regra antiga matava 0.01ms TUDO e tornava o site estático.
    ═══════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  /* Marquee e hero drift CONTINUAM a correr — 40s/18s já são suaves o
+     suficiente para serem aceitáveis com RM. O que mata mesmo motion
+     sickness é parallax fixed-bg e smooth-scroll programático. */
+  .parallax-bg::before {
+    background-attachment: scroll !important;
+  }
+  html {
     scroll-behavior: auto !important;
+  }
+  /* Reveals encurtam para 400ms + translado mínimo (perceptível mas
+     menos pronunciado para sensíveis a movimento). */
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale,
+  .reveal-clip {
+    transition-duration: 0.4s !important;
+  }
+  .reveal {
+    transform: translateY(12px);
+  }
+  .reveal-left {
+    transform: translateX(-16px);
+  }
+  .reveal-right {
+    transform: translateX(16px);
   }
 }
