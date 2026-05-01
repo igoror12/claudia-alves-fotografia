@@ -5,7 +5,7 @@ import { Instagram, Camera, Sparkles } from "lucide-react";
  * Mantém o tipo "Cláudia Alves Fotografia" na esquerda e copyright no centro.
  */
 const SOCIAL = [
-  { label: "Instagram", href: "https://instagram.com/claudiaalvesfoto", Icon: Instagram },
+  { label: "Instagram", href: "https://instagram.com/claudialvesfotografia", Icon: Instagram },
   { label: "Pinterest", href: "#", Icon: Sparkles },
   { label: "Behance", href: "#", Icon: Camera },
 ];

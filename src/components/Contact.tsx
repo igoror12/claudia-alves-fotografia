@@ -100,10 +100,10 @@ export function Contact() {
           rapidamente, especialmente na primavera e no verão.
         </p>
         <div className="flex flex-col gap-4">
-          <Detail label="Email" value="claudia@claudiaalves.pt" />
-          <Detail label="Telefone" value="+351 912 345 678" />
+          <Detail label="Email" value="claudialvesfotografia@gmail.com" />
+          <Detail label="Telefone" value="+351 938 944 545" />
           <Detail label="Localização" value="Braga, Portugal" />
-          <Detail label="Instagram" value="@claudiaalvesfoto" />
+          <Detail label="Instagram" value="@claudialvesfotografia" />
         </div>
       </aside>
     </section>
