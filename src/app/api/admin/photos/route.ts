@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
@@ -167,6 +168,10 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+
+  // Invalida o cache da homepage para a foto nova aparecer já,
+  // sem esperar pelos 10 min do revalidate.
+  revalidatePath("/");
 
   return NextResponse.json({ photo: created, warning: aiWarning });
 }

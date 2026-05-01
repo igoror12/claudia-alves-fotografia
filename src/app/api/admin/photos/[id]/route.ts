@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
@@ -33,6 +34,12 @@ export async function PATCH(
 
   const data = parsed.data;
   const photo = await prisma.photo.update({ where: { id: params.id }, data });
+
+  // Invalida o cache ISR da homepage e da galeria — as alterações
+  // (publicar/despublicar/destacar/editar) refletem-se imediatamente em vez
+  // de esperar pelos 10 min do `revalidate`.
+  revalidatePath("/");
+
   return NextResponse.json({ photo });
 }
 
@@ -55,5 +62,6 @@ export async function DELETE(
   ]);
 
   await prisma.photo.delete({ where: { id: params.id } });
+  revalidatePath("/");
   return NextResponse.json({ ok: true });
 }

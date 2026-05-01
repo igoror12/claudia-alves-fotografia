@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
@@ -70,6 +71,10 @@ export async function PATCH(
     where: { id: params.id },
     data,
   });
+
+  // Invalida o cache da homepage (secção blog) imediatamente.
+  revalidatePath("/");
+
   return NextResponse.json({ post });
 }
 
@@ -80,5 +85,6 @@ export async function DELETE(
   const { response } = await requireAdminSession();
   if (response) return response;
   await prisma.blogPost.delete({ where: { id: params.id } });
+  revalidatePath("/");
   return NextResponse.json({ ok: true });
 }

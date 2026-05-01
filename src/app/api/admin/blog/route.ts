@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
@@ -67,6 +68,9 @@ export async function POST(req: NextRequest) {
       authorId: userId,
     },
   });
+
+  // Invalida cache da homepage (secção Blog) imediatamente.
+  revalidatePath("/");
 
   return NextResponse.json({ post });
 }
