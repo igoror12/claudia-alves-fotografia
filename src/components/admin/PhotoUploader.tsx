@@ -11,6 +11,7 @@ type UploadJob = {
   file: File;
   status: "queued" | "uploading" | "done" | "error";
   message?: string;
+  warning?: string;
 };
 
 export function PhotoUploader({ categories }: Props) {
@@ -52,19 +53,23 @@ export function PhotoUploader({ categories }: Props) {
 
       try {
         const res = await fetch("/api/admin/photos", { method: "POST", body: fd });
+        const j = await res.json().catch(() => ({}));
         if (!res.ok) {
-          const j = await res.json().catch(() => ({}));
           throw new Error(j.error ?? `HTTP ${res.status}`);
         }
         setJobs((prev) =>
-          prev.map((j, idx) => (idx === i ? { ...j, status: "done" } : j))
+          prev.map((job, idx) =>
+            idx === i
+              ? { ...job, status: "done", warning: j.warning ?? undefined }
+              : job
+          )
         );
       } catch (e) {
         setJobs((prev) =>
-          prev.map((j, idx) =>
+          prev.map((job, idx) =>
             idx === i
-              ? { ...j, status: "error", message: (e as Error).message }
-              : j
+              ? { ...job, status: "error", message: (e as Error).message }
+              : job
           )
         );
       }
@@ -126,16 +131,34 @@ export function PhotoUploader({ categories }: Props) {
         <div className="mt-6">
           <ul className="text-sm space-y-2 mb-4">
             {jobs.map((j, i) => (
-              <li key={i} className="flex justify-between border-b border-warm-light/50 py-2">
-                <span className="truncate flex-1">{j.file.name}</span>
-                <span className="ml-4 text-xs uppercase tracking-[0.1em]">
-                  {j.status === "done" && <span className="text-accent">✓ enviado</span>}
-                  {j.status === "uploading" && <span className="text-warm-mid">a enviar...</span>}
-                  {j.status === "queued" && <span className="text-warm-mid">na fila</span>}
-                  {j.status === "error" && (
-                    <span className="text-red-600" title={j.message}>✕ erro</span>
-                  )}
-                </span>
+              <li key={i} className="border-b border-warm-light/50 py-2">
+                <div className="flex justify-between items-center">
+                  <span className="truncate flex-1">{j.file.name}</span>
+                  <span className="ml-4 text-xs uppercase tracking-[0.1em] flex-shrink-0">
+                    {j.status === "done" && (
+                      <span className="text-accent">✓ enviado</span>
+                    )}
+                    {j.status === "uploading" && (
+                      <span className="text-warm-mid">a enviar...</span>
+                    )}
+                    {j.status === "queued" && (
+                      <span className="text-warm-mid">na fila</span>
+                    )}
+                    {j.status === "error" && (
+                      <span className="text-red-600">✕ erro</span>
+                    )}
+                  </span>
+                </div>
+                {j.status === "error" && j.message && (
+                  <p className="text-xs text-red-600 mt-1 leading-relaxed normal-case tracking-normal">
+                    {j.message}
+                  </p>
+                )}
+                {j.status === "done" && j.warning && (
+                  <p className="text-xs text-warm-mid italic mt-1 leading-relaxed normal-case tracking-normal">
+                    Aviso: {j.warning}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

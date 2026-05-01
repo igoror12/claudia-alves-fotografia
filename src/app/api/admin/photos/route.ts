@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { processAndUploadPhoto } from "@/lib/image-pipeline";
 import { generatePhotoMetadata, categorizePhoto } from "@/lib/ai";
 
-// Aumenta o limite de body. Originais de fotografia profissional rondam
-// 5-15MB, vamos dar margem confortável até 25MB.
 export const maxDuration = 60;
 export const runtime = "nodejs";
 
@@ -19,17 +17,34 @@ const PostSchema = z.object({
 });
 
 /**
- * POST /api/admin/photos
- * multipart/form-data com:
- *   - file: a imagem (obrigatório)
- *   - title, description, categoryId, altText, featured (opcionais)
- *
- * Pipeline:
- * 1. Auth check (admin obrigatório)
- * 2. Sharp gera 3 variantes WebP + blur placeholder + uploads para Blob
- * 3. Claude Vision gera alt-text/SEO/categoria se faltarem campos
- * 4. Persiste no Postgres
+ * Helper para apanhar erros por estágio. Devolve resposta JSON com a etapa
+ * onde falhou, mensagem human-readable e o stack para os runtime logs do
+ * Vercel. Sem isto, o uploader só vê "erro" sem contexto.
  */
+async function runStage<T>(
+  stage: string,
+  fn: () => Promise<T>
+): Promise<T | { __stageError: { stage: string; message: string } }> {
+  try {
+    return await fn();
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error(`[upload:${stage}]`, e); // visível em vercel logs
+    return { __stageError: { stage, message } };
+  }
+}
+
+function isStageError(
+  v: unknown
+): v is { __stageError: { stage: string; message: string } } {
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    "__stageError" in v &&
+    typeof (v as { __stageError?: unknown }).__stageError === "object"
+  );
+}
+
 export async function POST(req: NextRequest) {
   const { response } = await requireAdminSession();
   if (response) return response;
@@ -41,7 +56,9 @@ export async function POST(req: NextRequest) {
   }
   if (file.size > 25 * 1024 * 1024) {
     return NextResponse.json(
-      { error: "Imagem demasiado grande (máx 25MB)." },
+      {
+        error: `Imagem demasiado grande (${(file.size / 1024 / 1024).toFixed(1)}MB, máx 25MB).`,
+      },
       { status: 413 }
     );
   }
@@ -49,74 +66,109 @@ export async function POST(req: NextRequest) {
   const parsed = PostSchema.safeParse(Object.fromEntries(form.entries()));
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Pedido invalido." },
+      { error: parsed.error.issues[0]?.message ?? "Pedido inválido." },
       { status: 400 }
     );
   }
   const fields = parsed.data;
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // 1. Processa e faz upload das variantes
-  const processed = await processAndUploadPhoto(buffer, file.name);
+  // ─── 1. Sharp + Vercel Blob ─────────────────────────────────────
+  const processed = await runStage("sharp+blob", () =>
+    processAndUploadPhoto(buffer, file.name)
+  );
+  if (isStageError(processed)) {
+    return NextResponse.json(
+      {
+        error: `Falha ao processar imagem (${processed.__stageError.stage}): ${processed.__stageError.message}. Verifica BLOB_READ_WRITE_TOKEN nas envs.`,
+        stage: processed.__stageError.stage,
+      },
+      { status: 500 }
+    );
+  }
 
-  // 2. IA preenche o que faltar (paralelo com upload já feito)
+  // ─── 2. Claude Vision (alt-text + categoria) — best-effort ──────
+  // Se falhar, NÃO bloqueia o upload. A foto ainda fica guardada com
+  // alt-text fallback, e a admin pode editar depois manualmente.
   let altText = fields.altText;
   let categoryId = fields.categoryId;
   let keywords: string[] = [];
+  let aiWarning: string | null = null;
 
   if (!altText || !categoryId) {
-    const [meta, autoCategory] = await Promise.all([
-      generatePhotoMetadata(processed.mediumUrl, fields.title),
-      categoryId
-        ? null
-        : categorizePhoto(processed.mediumUrl).then(async (slug) => {
-            const cat = await prisma.category.findUnique({ where: { slug } });
-            return cat?.id;
-          }),
-    ]);
+    const meta = await runStage("claude-meta", () =>
+      generatePhotoMetadata(processed.mediumUrl, fields.title)
+    );
+    if (isStageError(meta)) {
+      aiWarning = `Claude Vision falhou (${meta.__stageError.message}). Foto guardada com alt-text genérico. Verifica ANTHROPIC_API_KEY.`;
+    } else {
+      altText = altText ?? meta.altText;
+      keywords = meta.keywords;
+    }
 
-    altText = altText ?? meta.altText;
-    keywords = meta.keywords;
-    categoryId = categoryId ?? autoCategory ?? undefined;
+    if (!categoryId) {
+      const slug = await runStage("claude-category", () =>
+        categorizePhoto(processed.mediumUrl)
+      );
+      if (!isStageError(slug)) {
+        const cat = await prisma.category.findUnique({ where: { slug } });
+        categoryId = cat?.id;
+      }
+    }
   }
 
+  // ─── 3. Fallback de categoria ───────────────────────────────────
   if (!categoryId) {
-    // Fallback: primeira categoria por ordem
     const first = await prisma.category.findFirst({ orderBy: { order: "asc" } });
     if (!first) {
       return NextResponse.json(
-        { error: "Sem categorias na base de dados. Corre `npm run db:seed`." },
+        {
+          error:
+            "Sem categorias na base de dados. Corre `npm run db:seed` localmente.",
+          stage: "category-fallback",
+        },
         { status: 500 }
       );
     }
     categoryId = first.id;
   }
 
-  // 3. Persiste no Postgres
-  const photo = await prisma.photo.create({
-    data: {
-      thumbUrl: processed.thumbUrl,
-      mediumUrl: processed.mediumUrl,
-      fullUrl: processed.fullUrl,
-      originalUrl: processed.originalUrl,
-      blurDataUrl: processed.blurDataUrl,
-      width: processed.width,
-      height: processed.height,
-      title: fields.title,
-      description: fields.description,
-      altText: altText ?? "Fotografia por Cláudia Alves",
-      keywords,
-      categoryId,
-      featured: fields.featured ?? false,
-      exifCamera: processed.exif.camera,
-      exifLens: processed.exif.lens,
-      exifSettings: processed.exif.settings,
-      shotAt: processed.exif.shotAt,
-    },
-    include: { category: true },
-  });
+  // ─── 4. Persiste no Postgres ────────────────────────────────────
+  const created = await runStage("prisma-create", () =>
+    prisma.photo.create({
+      data: {
+        thumbUrl: processed.thumbUrl,
+        mediumUrl: processed.mediumUrl,
+        fullUrl: processed.fullUrl,
+        originalUrl: processed.originalUrl,
+        blurDataUrl: processed.blurDataUrl,
+        width: processed.width,
+        height: processed.height,
+        title: fields.title,
+        description: fields.description,
+        altText: altText ?? "Fotografia por Cláudia Alves",
+        keywords,
+        categoryId: categoryId!,
+        featured: fields.featured ?? false,
+        exifCamera: processed.exif.camera,
+        exifLens: processed.exif.lens,
+        exifSettings: processed.exif.settings,
+        shotAt: processed.exif.shotAt,
+      },
+      include: { category: true },
+    })
+  );
+  if (isStageError(created)) {
+    return NextResponse.json(
+      {
+        error: `Erro a guardar na DB: ${created.__stageError.message}`,
+        stage: created.__stageError.stage,
+      },
+      { status: 500 }
+    );
+  }
 
-  return NextResponse.json({ photo });
+  return NextResponse.json({ photo: created, warning: aiWarning });
 }
 
 export async function GET() {
