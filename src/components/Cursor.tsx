@@ -63,8 +63,10 @@ export function Cursor() {
         if (ring.current) {
           ring.current.style.width = "72px";
           ring.current.style.height = "72px";
-          ring.current.style.background = "rgba(46,40,32,0.55)";
-          ring.current.style.borderColor = "transparent";
+          ring.current.style.background = "rgba(255,255,255,0.92)";
+          ring.current.style.borderColor = "rgba(255,255,255,0.95)";
+          ring.current.style.boxShadow = "0 0 18px rgba(255,255,255,0.25)";
+          ring.current.style.backdropFilter = "blur(3px)";
         }
       } else {
         // Modo padrão "interactive": ponto accent + ring um pouco maior
