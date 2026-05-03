@@ -12,6 +12,7 @@
   --warm-light: #ddd4c8;
   --accent: #c9a882;
   --section-dark: #3c3228;
+  --nav-h: 72px; /* altura real do teu nav */
 
   /* Curvas de easing partilhadas — mantém coerência cinética */
   --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
@@ -501,14 +502,14 @@ body {
   transition: transform 0.85s var(--ease-out);
   will-change: transform;
 }
-.hero-tile:hover {
-  /* Pausar o drift quando o utilizador está a observar a tile específica. */
-  animation-play-state: paused;
-}
 .hero-tile:hover .hero-tile-inner {
-  /* Hover scale (depois do zoomIn estar feito). */
   animation: none;
   transform: scale(1.04);
+}
+/* DEPOIS */
+.hero-tile:hover .hero-tile-inner {
+  animation-play-state: paused;   /* pausa sem snap */
+  transform: scale(1.04);         /* a transition de 0.85s já cuida do suave */
 }
 .hero-tile-inner img {
   object-fit: cover;

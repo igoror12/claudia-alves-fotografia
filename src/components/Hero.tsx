@@ -71,7 +71,7 @@ export function Hero({ featured }: Props) {
       </div>
 
       <div className="relative overflow-hidden min-h-[60vh] md:min-h-screen bg-warm-light/20">
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[3px]">
+        <div className="absolute inset-0 md:top-0 grid grid-cols-2 grid-rows-2 gap-[3px]">
           {/* Slot 0: ocupa coluna 1 inteira (rowSpan 2) */}
           <HeroSlot photo={slots[0]} placeholder={PLACEHOLDERS[0]} rowSpan2 priority />
           {/* Slot 1: top-right */}
