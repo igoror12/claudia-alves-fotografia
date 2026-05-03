@@ -73,25 +73,11 @@ export function Hero({ featured }: Props) {
       <div className="relative overflow-hidden min-h-[60vh] md:min-h-screen bg-warm-light/20">
         <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[3px]">
           {/* Slot 0: ocupa coluna 1 inteira (rowSpan 2) */}
-          <HeroSlot
-            photo={slots[0]}
-            placeholder={PLACEHOLDERS[0]}
-            delayClass="delay-1"
-            rowSpan2
-            priority
-          />
+          <HeroSlot photo={slots[0]} placeholder={PLACEHOLDERS[0]} rowSpan2 priority />
           {/* Slot 1: top-right */}
-          <HeroSlot
-            photo={slots[1]}
-            placeholder={PLACEHOLDERS[1]}
-            delayClass="delay-2"
-          />
+          <HeroSlot photo={slots[1]} placeholder={PLACEHOLDERS[1]} />
           {/* Slot 2: bottom-right */}
-          <HeroSlot
-            photo={slots[2]}
-            placeholder={PLACEHOLDERS[2]}
-            delayClass="delay-3"
-          />
+          <HeroSlot photo={slots[2]} placeholder={PLACEHOLDERS[2]} />
         </div>
       </div>
     </section>
@@ -107,20 +93,21 @@ function HeroSlot({
   photo,
   placeholder,
   rowSpan2 = false,
-  delayClass = "",
   priority = false,
 }: {
   photo: Photo | null;
   placeholder: { gradient: string; svg: React.ReactNode };
   rowSpan2?: boolean;
-  delayClass?: string;
   priority?: boolean;
 }) {
+  // CRÍTICO: NÃO adicionar `anim-fade-in` aqui. Em globals.css, `.hero-tile`
+  // define `animation: heroDrift` no shorthand, e como vem mais abaixo no
+  // ficheiro, sobrescreve o `animation: fadeIn` da `.anim-fade-in`. O bug
+  // resultante: opacity fica stuck em 0 e a foto é invisível. A entrada
+  // cinematográfica vem do `heroZoomIn` aplicado em `.hero-tile-inner`.
   return (
-    <div
-      className={`hero-tile anim-fade-in ${delayClass} ${rowSpan2 ? "row-span-2" : ""} relative`}
-    >
-      <div className="hero-tile-inner relative w-full h-full">
+    <div className={`hero-tile ${rowSpan2 ? "row-span-2" : ""}`}>
+      <div className="hero-tile-inner">
         {photo ? (
           <Image
             src={photo.mediumUrl}
