@@ -54,9 +54,45 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/**
+ * Structured data Schema.org — informa o Google que este é um negócio
+ * local de fotografia em Braga. Permite rich results (mapa, telefone,
+ * preço-range) nos resultados de pesquisa.
+ *
+ * Atualizar `priceRange` e contactos se mudarem.
+ */
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": `${siteUrl}/#business`,
+  name: "Cláudia Alves Fotografia",
+  description:
+    "Fotografia de retratos, casamentos e eventos em Braga, Portugal.",
+  url: siteUrl,
+  image: `${siteUrl}/opengraph-image`,
+  priceRange: "€€",
+  telephone: "+351938944545",
+  email: "claudialvesfotografia@gmail.com",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Braga",
+    addressRegion: "Braga",
+    addressCountry: "PT",
+  },
+  areaServed: { "@type": "Country", name: "Portugal" },
+  sameAs: ["https://instagram.com/claudialvesfotografia"],
+  serviceType: ["Fotografia de casamento", "Retratos", "Eventos"],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-PT" className={`${serif.variable} ${sans.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body className="font-sans">{children}</body>
     </html>
   );

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireAdminPage } from "@/lib/admin-auth";
 import { BlogEditor } from "@/components/admin/BlogEditor";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export default async function EditBlogPostPage({
 }: {
   params: { id: string };
 }) {
+  await requireAdminPage();
+
   const post = await prisma.blogPost.findUnique({ where: { id: params.id } });
   if (!post) notFound();
 

@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { requireAdminPage } from "@/lib/admin-auth";
 import { BlogList } from "@/components/admin/BlogList";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminBlogPage() {
+  await requireAdminPage();
+
   const posts = await prisma.blogPost.findMany({
     orderBy: [{ published: "asc" }, { updatedAt: "desc" }],
     include: { author: { select: { name: true, email: true } } },

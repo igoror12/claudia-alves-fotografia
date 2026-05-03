@@ -1,10 +1,13 @@
 import { prisma } from "@/lib/prisma";
+import { requireAdminPage } from "@/lib/admin-auth";
 import { PhotoUploader } from "@/components/admin/PhotoUploader";
 import { PhotoGrid } from "@/components/admin/PhotoGrid";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
+  await requireAdminPage();
+
   const [photos, categories] = await Promise.all([
     prisma.photo.findMany({
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],

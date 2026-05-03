@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { requireAdminPage } from "@/lib/admin-auth";
 import { MessagesList } from "@/components/admin/MessagesList";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminMessagesPage() {
+  await requireAdminPage();
+
   const messages = await prisma.contactRequest.findMany({
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
   });

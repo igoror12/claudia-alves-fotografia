@@ -50,16 +50,19 @@ function extractJSON<T>(text: string): T | null {
  * Converte uma URL pública de imagem num bloco Anthropic vision.
  * Usamos sempre URL (mais barato em tokens que base64) — as variantes
  * já estão alojadas no Vercel Blob com URL imutável.
+ *
+ * O SDK @anthropic-ai/sdk@0.91+ suporta `{ type: "url", url }` como
+ * source válido em ImageBlockParam. Tipamos explicitamente para apanhar
+ * regressões se um dia a forma do SDK mudar.
  */
-// ✅ CORRETO
-function imageBlock(imageUrl: string) {
+function imageBlock(imageUrl: string): Anthropic.ImageBlockParam {
   return {
-    type: "image" as const,
+    type: "image",
     source: {
-      type: "url" as const,
+      type: "url",
       url: imageUrl,
     },
-  } as any;
+  };
 }
 
 // ─── 1. Geração de alt-text + keywords SEO ───────────────────────
