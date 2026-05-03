@@ -95,12 +95,22 @@ async function safeFetchHomeData(): Promise<{
 export default async function HomePage() {
   const { featured, gallery, posts, categories } = await safeFetchHomeData();
 
+  // O Hero precisa sempre de 3 fotos para preencher o lado direito.
+  // Se a Cláudia ainda não marcou 3 como Destaque, completamos
+  // automaticamente com outras fotos publicadas (sem duplicar).
+  const heroPhotos = (() => {
+    if (featured.length >= 3) return featured.slice(0, 3);
+    const seen = new Set(featured.map((p) => p.id));
+    const extras = gallery.filter((p) => !seen.has(p.id));
+    return [...featured, ...extras].slice(0, 3);
+  })();
+
   return (
     <>
       <Cursor />
       <Reveal />
       <Nav />
-      <Hero featured={featured} />
+      <Hero featured={heroPhotos} />
       <Marquee />
       <Gallery photos={gallery} categories={categories} />
       <Divider />
