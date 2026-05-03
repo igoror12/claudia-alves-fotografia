@@ -61,12 +61,12 @@ export function Cursor() {
           dot.current.style.opacity = "0";
         }
         if (ring.current) {
-          ring.current.style.width = "72px";
-          ring.current.style.height = "72px";
-          ring.current.style.background = "rgba(255,255,255,0.92)";
-          ring.current.style.borderColor = "rgba(255,255,255,0.95)";
-          ring.current.style.boxShadow = "0 0 18px rgba(255,255,255,0.25)";
-          ring.current.style.backdropFilter = "blur(3px)";
+          ring.current.style.width = "64px";
+          ring.current.style.height = "64px";
+          ring.current.style.background = "rgba(255,255,255,0.06)";
+          ring.current.style.borderColor = "rgba(255,255,255,0.78)";
+          ring.current.style.boxShadow = "0 0 14px rgba(255,255,255,0.14)";
+          ring.current.style.backdropFilter = "blur(2px)";
         }
       } else {
         // Modo padrão "interactive": ponto accent + ring um pouco maior
