@@ -766,10 +766,7 @@ body.cursor-view .cursor-ver-label {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.04);
 }
-body.cursor-active,
-body.cursor-active * {
-  cursor: none !important;
-}
+
 /* ═══════════════════════════════════════════════════════════════════
    ACESSIBILIDADE — prefers-reduced-motion
    Versão CIRÚRGICA: desliga só animações em loop (marquee, drift, pulse)
