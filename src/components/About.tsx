@@ -10,7 +10,11 @@ export function About() {
       id="about"
     >
       <div className="about-portrait reveal-left aspect-[3/4]">
-        <div className="about-portrait-img bg-gradient-to-br from-[#5A4838] via-[#8C6A54] to-[#B28E74]" />
+        <img
+          src="/images/claudia.jpg"
+          alt="Cláudia Alves"
+          className="about-portrait-img object-cover w-full h-full"
+        />
         <div className="about-portrait-frame" />
       </div>
 
