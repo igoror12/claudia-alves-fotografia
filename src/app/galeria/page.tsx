@@ -70,12 +70,13 @@ export default async function GalleryHub() {
               >
                 {cover ? (
                   <Image
-                    src={cover.mediumUrl}
+                    src={cover.fullUrl}
                     alt={cover.altText}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     placeholder="blur"
                     blurDataURL={cover.blurDataUrl}
+                    quality={92}
                     className="object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-[1.06]"
                   />
                 ) : (

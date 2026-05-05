@@ -35,10 +35,27 @@ body {
   overflow-x: hidden;
 }
 
-/* Cursor custom só em dispositivos com hover (não em touch) */
-@media (hover: hover) and (pointer: fine) {
+/* Cursor custom só em dispositivos com hover preciso (rato).
+   Touch (pointer: coarse) e utilizadores com reduced-motion ficam com
+   o cursor default do sistema — perder o cursor pode ser desorientador
+   para sensíveis a movimento ou para quem precisa de apontamento preciso. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   body.cursor-active {
     cursor: none;
+  }
+}
+
+/* Fallback explícito: se RM está ativo OU dispositivo coarse, esconde o
+   cursor custom (dot/ring/label) e devolve o cursor do sistema.
+   Defesa em camadas — o JS já faz `if (matchMedia("(hover: none)")) return`,
+   mas se algum cenário não for apanhado, o CSS é o último guarda. */
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  body.cursor-active {
+    cursor: auto !important;
+  }
+  body.cursor-active > div[class*="fixed"][class*="rounded-full"][class*="z-[999"],
+  body.cursor-active .cursor-ver-label {
+    display: none !important;
   }
 }
 
@@ -72,6 +89,28 @@ body {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeWordRoll {
+  0%,
+  100% {
+    transform: rotateX(0deg) rotateZ(0deg);
+  }
+  50% {
+    transform: rotateX(12deg) rotateZ(-1deg);
+  }
+}
+
+@keyframes marqueeDotSpin {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.14);
+  }
+  to {
+    transform: rotate(360deg) scale(1);
   }
 }
 
@@ -266,16 +305,29 @@ body {
   padding: 1rem 0;
   overflow: hidden;
   white-space: nowrap;
+  perspective: 900px;
 }
 .marquee-inner {
   display: inline-flex;
   gap: 3rem;
-  /* 40s = cadência editorial. Pause on hover dá controlo ao utilizador. */
-  animation: marquee 40s linear infinite;
+  /* 70s = giro bem lento/editorial. Pause on hover dá controlo ao utilizador. */
+  animation: marquee 70s linear infinite;
   will-change: transform;
 }
 .marquee-band:hover .marquee-inner {
   animation-play-state: paused;
+}
+.marquee-word {
+  display: inline-block;
+  transform-origin: center center;
+  animation: marqueeWordRoll 8s ease-in-out infinite;
+  will-change: transform;
+}
+.marquee-dot {
+  display: inline-block;
+  animation: marqueeDotSpin 10s linear infinite;
+  transform-origin: center center;
+  will-change: transform;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -431,12 +483,23 @@ body {
 .gallery-item {
   position: relative;
   overflow: hidden;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
 }
 .gallery-item .gallery-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.85s var(--ease-out);
+}
+.gallery-item .gallery-img-natural {
+  display: block;
+  height: auto;
 }
 .gallery-item:hover .gallery-img {
   transform: scale(1.06);

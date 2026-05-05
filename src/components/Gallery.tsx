@@ -21,6 +21,14 @@ type Props = {
  * os primeiros 6 com o masonry editorial e adicionamos botão
  * "Ver todas →" que leva à página da categoria.
  */
+/**
+ * Layouts SIMPLES sem `row-span` — assim os aspect-ratios não precisam
+ * de bater certos para evitar buracos no grid. Cada item tem o mesmo
+ * aspect-ratio dentro de cada layout, garantindo alinhamento perfeito.
+ *
+ * Sacrificámos alguma assimetria editorial (que era frágil com aspect
+ * ratios reais de fotografia) em troca de um grid robusto.
+ */
 const LAYOUTS: Record<number, string[]> = {
   1: ["col-span-12 aspect-[16/9]"],
   2: [
@@ -28,9 +36,9 @@ const LAYOUTS: Record<number, string[]> = {
     "col-span-12 md:col-span-6 aspect-[4/3]",
   ],
   3: [
-    "col-span-12 md:col-span-6 row-span-2 aspect-[4/5]",
-    "col-span-12 md:col-span-6 aspect-[16/9]",
-    "col-span-12 md:col-span-6 aspect-[16/9]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
   ],
   4: [
     "col-span-12 md:col-span-6 aspect-[4/3]",
@@ -39,19 +47,19 @@ const LAYOUTS: Record<number, string[]> = {
     "col-span-12 md:col-span-6 aspect-[4/3]",
   ],
   5: [
-    "col-span-12 md:col-span-7 row-span-2 aspect-[4/3]",
-    "col-span-12 md:col-span-5 aspect-[5/4]",
-    "col-span-12 md:col-span-5 aspect-[5/4]",
     "col-span-12 md:col-span-6 aspect-[4/3]",
     "col-span-12 md:col-span-6 aspect-[4/3]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
   ],
   6: [
-    "col-span-12 md:col-span-7 row-span-2 aspect-[4/3]",
-    "col-span-12 md:col-span-5 aspect-[5/4]",
-    "col-span-12 md:col-span-5 aspect-[5/4]",
-    "col-span-12 md:col-span-4 row-span-2 aspect-[3/4]",
-    "col-span-12 md:col-span-4 aspect-[4/3]",
-    "col-span-12 md:col-span-4 aspect-[4/3]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
+    "col-span-12 md:col-span-4 aspect-[3/4]",
   ],
 };
 
@@ -115,49 +123,65 @@ export function Gallery({ photos, categories }: Props) {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-12 gap-1 auto-rows-fr">
-            {display.map((photo, i) => (
-              <button
-                type="button"
-                key={photo.id}
-                className={`gallery-item gallery-item-link reveal stagger-${(i % 6) + 1} ${layout[i] ?? "col-span-12 md:col-span-4 aspect-[4/3]"}`}
-                data-cursor="ver"
-                onClick={() => setLightboxIndex(i)}
-                aria-label={`Abrir fotografia: ${photo.altText}`}
-              >
-                <Image
-                  src={photo.mediumUrl}
-                  alt={photo.altText}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  placeholder="blur"
-                  blurDataURL={photo.blurDataUrl}
-                  className="gallery-img"
-                />
-                <div className="gallery-overlay">
-                  <div className="gallery-meta">
-                    <div className="text-[0.65rem] uppercase tracking-[0.2em] text-accent">
-                      {photo.category.name}
-                    </div>
-                    {photo.title && (
-                      <div className="font-serif text-xl font-light text-white italic">
-                        {photo.title}
+          <div className="grid grid-cols-12 auto-rows-[1fr] gap-2">
+            {display.map((photo, i) => {
+              // Tiles que ocupam mais largura merecem o variant `fullUrl` (2400px)
+              // para parecerem nítidos em retina/4K. As `col-span-12` mobile
+              // também justificam alta resolução porque ocupam ecrã inteiro.
+              const isLargeTile =
+                (layout[i] ?? "").includes("col-span-12") ||
+                (layout[i] ?? "").includes("md:col-span-7") ||
+                (layout[i] ?? "").includes("md:col-span-6");
+              const src = isLargeTile ? photo.fullUrl : photo.mediumUrl;
+
+              return (
+                <button
+                  type="button"
+                  key={photo.id}
+                  className={`gallery-item gallery-item-link reveal stagger-${(i % 6) + 1} ${layout[i] ?? "col-span-12 md:col-span-4 aspect-[4/3]"}`}
+                  data-cursor="ver"
+                  onClick={() => setLightboxIndex(i)}
+                  aria-label={`Abrir fotografia: ${photo.altText}`}
+                >
+                  <Image
+                    src={src}
+                    alt={photo.altText}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
+                    placeholder="blur"
+                    blurDataURL={photo.blurDataUrl}
+                    quality={90}
+                    className="gallery-img"
+                  />
+                  <div className="gallery-overlay">
+                    <div className="gallery-meta">
+                      <div className="text-[0.65rem] uppercase tracking-[0.2em] text-accent">
+                        {photo.category.name}
                       </div>
-                    )}
+                      {photo.title && (
+                        <div className="font-serif text-xl font-light text-white italic">
+                          {photo.title}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
 
-          {hasMore && (
-            <div className="mt-12 text-center reveal">
-              <Link href={seeAllHref} className="btn-link">
-                Ver todas as {totalForFilter} fotografias
-                <span>→</span>
-              </Link>
-            </div>
-          )}
+          {/* Link sempre visível (não condicional) — o cliente precisa
+              SEMPRE de ter um caminho claro para ver tudo. */}
+          <div className="mt-12 text-center reveal">
+            <Link href={seeAllHref} className="btn-link">
+              {hasMore
+                ? `Ver todas as ${totalForFilter} fotografias`
+                : filter === "all"
+                  ? "Ver galeria completa por categoria"
+                  : `Ver mais ${categories.find((c) => c.slug === filter)?.name ?? ""}`}
+              <span>→</span>
+            </Link>
+          </div>
         </>
       )}
 

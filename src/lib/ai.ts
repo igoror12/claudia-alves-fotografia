@@ -3,17 +3,19 @@ import Anthropic from "@anthropic-ai/sdk";
 // ─── Cliente partilhado ───────────────────────────────────────────
 // Lazy: só instancia se a chave existe, para não rebentar em build
 // caso a env var ainda não esteja definida (ex: preview deployments).
-let _client: Anthropic | null = null;
-function client(): Anthropic {
-  if (_client) return _client;
+// `cachedClient` é privado pelo escopo do módulo (não é exportado),
+// não precisa de underscore prefix — convenção PT/JS obsoleta.
+let cachedClient: Anthropic | null = null;
+function getClient(): Anthropic {
+  if (cachedClient) return cachedClient;
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error(
       "ANTHROPIC_API_KEY não definida. Configura no .env ou nas envs do Vercel."
     );
   }
-  _client = new Anthropic({ apiKey });
-  return _client;
+  cachedClient = new Anthropic({ apiKey });
+  return cachedClient;
 }
 
 const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-6";
@@ -95,7 +97,7 @@ Regras absolutas:
 Devolve EXCLUSIVAMENTE JSON válido com esta forma:
 {"alt": "...", "keywords": ["...","..."], "description": "..."}`;
 
-  const message = await client().messages.create({
+  const message = await getClient().messages.create({
     model: MODEL,
     max_tokens: 400,
     system: systemPrompt,
@@ -141,7 +143,7 @@ Devolve EXCLUSIVAMENTE JSON válido com esta forma:
  * Usa um max_tokens muito pequeno (10) — é uma classificação, não geração.
  */
 export async function categorizePhoto(imageUrl: string): Promise<CategorySlug> {
-  const message = await client().messages.create({
+  const message = await getClient().messages.create({
     model: MODEL,
     max_tokens: 10,
     system: `Classificas fotografias em UMA de três categorias: "retratos", "casamentos", "eventos".
@@ -210,7 +212,7 @@ Data pretendida: ${input.desiredDate ?? "não indicada"}
 Mensagem:
 ${input.message}`;
 
-  const message = await client().messages.create({
+  const message = await getClient().messages.create({
     model: MODEL,
     max_tokens: 250,
     system: systemPrompt,

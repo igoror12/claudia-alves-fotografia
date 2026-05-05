@@ -110,12 +110,13 @@ function HeroSlot({
       <div className="hero-tile-inner">
         {photo ? (
           <Image
-            src={photo.mediumUrl}
+            src={photo.fullUrl}
             alt={photo.altText}
             fill
-            sizes="(max-width: 768px) 100vw, 25vw"
+            sizes="(max-width: 768px) 100vw, 50vw"
             placeholder="blur"
             blurDataURL={photo.blurDataUrl}
+            quality={95}
             priority={priority}
             className="object-cover"
           />

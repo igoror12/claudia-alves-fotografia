@@ -35,11 +35,12 @@ export function Nav() {
       </Link>
       <ul className="hidden md:flex gap-10 list-none">
         {[
-          ["Portfolio", "#portfolio"],
-          ["Sobre", "#about"],
-          ["Serviços", "#services"],
-          ["Blog", "#blog"],
-          ["Contacto", "#contact"],
+          ["Portfolio", "/#portfolio"],
+          ["Galeria", "/galeria"],
+          ["Sobre", "/#about"],
+          ["Serviços", "/#services"],
+          ["Blog", "/#blog"],
+          ["Contacto", "/#contact"],
         ].map(([label, href]) => (
           <li key={href}>
             <a href={href} className="nav-link">

@@ -22,12 +22,12 @@ export function Marquee() {
           entry.type === "text" ? (
             <span
               key={i}
-              className="font-serif text-[1.1rem] italic font-light text-cream tracking-[0.05em] opacity-75 flex-shrink-0"
+              className="marquee-word font-serif text-[1.15rem] italic font-light text-cream tracking-[0.05em] opacity-80 flex-shrink-0"
             >
               {entry.value}
             </span>
           ) : (
-            <span key={i} className="text-[1.1rem] text-accent flex-shrink-0">
+            <span key={i} className="marquee-dot text-[1.1rem] text-accent flex-shrink-0">
               {entry.value}
             </span>
           )

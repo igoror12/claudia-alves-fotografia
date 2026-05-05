@@ -118,8 +118,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ─── 3. Fallback de categoria ───────────────────────────────────
-  if (!categoryId) {
+  // ─── 3. Fallback de categoria — narrowing explícito ────────────
+  // Usamos uma variável `resolvedCategoryId: string` para o type system
+  // garantir que é sempre não-nulo no Prisma create (em vez de `!` assertion).
+  let resolvedCategoryId: string;
+  if (categoryId) {
+    resolvedCategoryId = categoryId;
+  } else {
     const first = await prisma.category.findFirst({ orderBy: { order: "asc" } });
     if (!first) {
       return NextResponse.json(
@@ -131,7 +136,7 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-    categoryId = first.id;
+    resolvedCategoryId = first.id;
   }
 
   // ─── 4. Persiste no Postgres ────────────────────────────────────
@@ -149,7 +154,7 @@ export async function POST(req: NextRequest) {
         description: fields.description,
         altText: altText ?? "Fotografia por Cláudia Alves",
         keywords,
-        categoryId: categoryId!,
+        categoryId: resolvedCategoryId,
         featured: fields.featured ?? false,
         exifCamera: processed.exif.camera,
         exifLens: processed.exif.lens,

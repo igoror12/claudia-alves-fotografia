@@ -121,6 +121,7 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
             className="object-contain"
             placeholder="blur"
             blurDataURL={photo.blurDataUrl}
+            quality={95}
             priority
           />
         </div>

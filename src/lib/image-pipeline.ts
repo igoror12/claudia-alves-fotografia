@@ -10,9 +10,9 @@ import { put } from "@vercel/blob";
 // Os originais só são guardados se STORE_ORIGINAL_UPLOADS=true. O Vercel Blob
 // expõe ficheiros publicamente, por isso o modo seguro é guardar só variantes.
 const VARIANTS = [
-  { name: "thumb", width: 400, quality: 75 },
-  { name: "medium", width: 1200, quality: 82 },
-  { name: "full", width: 2400, quality: 88 },
+  { name: "thumb", width: 480, quality: 80 },
+  { name: "medium", width: 1600, quality: 88 },
+  { name: "full", width: 2800, quality: 92 },
 ] as const;
 
 export type ProcessedImage = {
@@ -37,7 +37,7 @@ export type ProcessedImage = {
  *
  * Estratégia de qualidade:
  * - WebP em vez de JPEG → ~30% menor com qualidade visualmente equivalente
- * - quality progressiva (75/82/88) → thumbs comprimem mais agressivo
+ * - quality progressiva (80/88/92) → thumbs comprimem mais agressivo
  * - sRGB color profile forçado → consistência cross-browser
  * - mantém EXIF rotation (orienta corretamente fotos de telemóvel)
  * - chroma subsampling 4:4:4 nas variantes grandes (cores mais fiéis em pele)

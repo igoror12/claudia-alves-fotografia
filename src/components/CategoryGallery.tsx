@@ -22,27 +22,27 @@ export function CategoryGallery({ photos }: { photos: PhotoWithCategory[] }) {
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+      <div className="columns-2 gap-2 sm:columns-3 sm:gap-3 lg:columns-4">
         {photos.map((photo, i) => {
-          const aspect = photo.height > 0 ? photo.width / photo.height : 1;
           return (
             <button
               type="button"
               key={photo.id}
-              className="gallery-item reveal"
+              className="gallery-item reveal mb-2 block w-full break-inside-avoid sm:mb-3"
               data-cursor="ver"
-              style={{ aspectRatio: aspect.toString() }}
               onClick={() => setLightboxIndex(i)}
               aria-label={`Abrir fotografia: ${photo.altText}`}
             >
               <Image
                 src={photo.mediumUrl}
                 alt={photo.altText}
-                fill
+                width={photo.width}
+                height={photo.height}
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 placeholder="blur"
                 blurDataURL={photo.blurDataUrl}
-                className="gallery-img"
+                quality={90}
+                className="gallery-img gallery-img-natural"
               />
               <div className="gallery-overlay">
                 <div className="gallery-meta">
