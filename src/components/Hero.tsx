@@ -122,6 +122,8 @@ function HeroSlot({
           />
         ) : (
           <div
+            role="img"
+            aria-label="Fotografia de Cláudia Alves Fotografia"
             className={`w-full h-full bg-gradient-to-br ${placeholder.gradient} flex items-center justify-center`}
           >
             {placeholder.svg}

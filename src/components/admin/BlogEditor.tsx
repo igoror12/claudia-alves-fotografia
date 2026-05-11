@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { marked } from "marked";
 import type { BlogPost } from "@prisma/client";
 
 type Props = { post?: BlogPost };
@@ -30,6 +31,7 @@ export function BlogEditor({ post }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [saving, setSaving] = useState(false);
+  const [previewContent, setPreviewContent] = useState(false);
 
   const [title, setTitle] = useState(post?.title ?? "");
   const [slug, setSlug] = useState(post?.slug ?? "");
@@ -162,16 +164,52 @@ export function BlogEditor({ post }: Props) {
       </Field>
 
       <Field label="Conteúdo (Markdown)">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="# Título secundário&#10;&#10;Parágrafo normal. **negrito** e *itálico*.&#10;&#10;- lista&#10;- de pontos"
-          rows={20}
-          className="w-full bg-transparent border border-warm-light focus:border-accent outline-none p-3 text-sm font-mono resize-y"
-          required
-        />
+        {/* Tabs editar / pré-visualizar */}
+        <div className="flex gap-0 mb-0 border-b border-warm-light">
+          <button
+            type="button"
+            onClick={() => setPreviewContent(false)}
+            className={`text-[0.65rem] uppercase tracking-[0.15em] px-4 py-2 border-b-2 transition-colors ${
+              !previewContent
+                ? "border-ink text-ink"
+                : "border-transparent text-warm-mid hover:text-ink"
+            }`}
+          >
+            Editar
+          </button>
+          <button
+            type="button"
+            onClick={() => setPreviewContent(true)}
+            className={`text-[0.65rem] uppercase tracking-[0.15em] px-4 py-2 border-b-2 transition-colors ${
+              previewContent
+                ? "border-ink text-ink"
+                : "border-transparent text-warm-mid hover:text-ink"
+            }`}
+          >
+            Pré-visualizar
+          </button>
+        </div>
+        {previewContent ? (
+          <div
+            className="blog-content border border-warm-light border-t-0 p-4 min-h-[320px] bg-white"
+            dangerouslySetInnerHTML={{
+              __html: content.trim()
+                ? (marked.parse(content) as string)
+                : '<p style="color:#9e8e7e;font-style:italic">Sem conteúdo para pré-visualizar.</p>',
+            }}
+          />
+        ) : (
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder={"## Título\n\nParágrafo normal. **negrito** e *itálico*.\n\n- lista\n- de pontos\n\n> citação"}
+            rows={20}
+            className="w-full bg-transparent border border-warm-light border-t-0 focus:border-accent outline-none p-3 text-sm font-mono resize-y"
+            required
+          />
+        )}
         <span className="text-[0.65rem] text-warm-mid mt-1 block">
-          Suporta Markdown: # H1, ## H2, **negrito**, *itálico*, [link](url), - listas, &gt; citações.
+          Suporta Markdown: ## H2, **negrito**, *itálico*, [link](url), - listas, &gt; citações.
         </span>
       </Field>
 
