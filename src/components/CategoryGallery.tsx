@@ -42,6 +42,7 @@ export function CategoryGallery({ photos }: { photos: PhotoWithCategory[] }) {
                 placeholder="blur"
                 blurDataURL={photo.blurDataUrl}
                 quality={90}
+                priority={i < 4}
                 className="gallery-img gallery-img-natural"
               />
               <div className="gallery-overlay">
