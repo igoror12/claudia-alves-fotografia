@@ -11,19 +11,27 @@ export function Contact() {
     setStatus("sending");
     setError("");
 
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
 
-    if (res.ok) {
-      setStatus("ok");
-      e.currentTarget.reset();
-    } else {
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        setStatus("ok");
+        form.reset();
+        return;
+      }
+
       const j = await res.json().catch(() => ({}));
       setError(j.error ?? "Não foi possível enviar a mensagem.");
+      setStatus("error");
+    } catch {
+      setError("Não foi possível contactar o servidor. Tenta novamente.");
       setStatus("error");
     }
   }
@@ -41,8 +49,6 @@ export function Contact() {
         </h2>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-6 mt-12">
-          {/* Honeypot — escondido a humanos, preenchido por bots.
-              Lê-se em /api/contact e descarta silenciosamente. */}
           <input
             type="text"
             name="website"

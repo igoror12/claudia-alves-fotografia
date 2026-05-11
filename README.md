@@ -12,7 +12,7 @@ Site oficial da fotógrafa Cláudia Alves (Braga, Portugal). Portfólio editoria
 - **Vercel Blob** para fotografias
 - **Sharp** para gerar 3 variantes WebP responsive + blur placeholder
 - **Anthropic Claude** (Sonnet 4.6) para alt-text, categorização e pré-orçamento
-- **Resend** (opcional) para notificação por email
+- **Resend** para notificação à fotógrafa e confirmação ao cliente
 
 ## Estrutura
 
@@ -115,9 +115,10 @@ A home usa `revalidate = 600` (ISR de 10 min) para puxar fotos novas sem redeplo
 Visitante submete formulário
   └─ POST /api/contact
        ├─ Zod valida + honeypot + rate-limit em memória
-       ├─ Prisma: cria ContactRequest (não esperamos pela IA)
-       ├─ [async] Claude: resumo executivo + gama €X-€Y
-       └─ [async] Resend: notifica claudia@claudiaalves.pt (se config.)
+       ├─ Prisma: cria ContactRequest
+       ├─ Claude: resumo executivo + gama €X-€Y (best-effort)
+       ├─ Resend: notifica a Cláudia
+       └─ Resend: envia confirmação ao cliente
 ```
 
 ## Deploy (Vercel)

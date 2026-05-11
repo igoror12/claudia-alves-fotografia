@@ -73,8 +73,9 @@ Em **Settings → Environment Variables** do projeto, adiciona em todos os ambie
 | `ANTHROPIC_API_KEY` | `sk-ant-...` | De [console.anthropic.com](https://console.anthropic.com/settings/keys) |
 | `ANTHROPIC_MODEL` | `claude-sonnet-4-6` | Default OK |
 | `NEXT_PUBLIC_SITE_URL` | `https://claudiaalves.pt` | Usado pelo sitemap |
-| `RESEND_API_KEY` | `re_...` _(opcional)_ | Para notificação de contactos |
-| `NOTIFY_EMAIL` | `claudia@claudiaalves.pt` _(opcional)_ | Recetor das notificações |
+| `RESEND_API_KEY` | `re_...` | Chave API do Resend para o formulário |
+| `RESEND_FROM_EMAIL` | `Claudia Alves Fotografia <noreply@claudiaalves.pt>` | Remetente verificado no Resend |
+| `NOTIFY_EMAIL` | `claudialvesfotografia@gmail.com` | Email da Cláudia que recebe as notificações |
 
 > Gera o secret rápido com PowerShell: `[Convert]::ToBase64String((1..32 | %{Get-Random -Max 256}))`.
 
