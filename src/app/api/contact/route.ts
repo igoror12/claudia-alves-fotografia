@@ -174,6 +174,33 @@ async function enrichAndNotify(
     }
 
     const resendKey = process.env.RESEND_API_KEY;
+    // RESEND_FROM deve ser um remetente verificado no painel Resend.
+    // Enquanto o domínio claudiaalves.pt não tiver DNS verificado, usa
+    // "onboarding@resend.dev" (domínio de teste pré-verificado pelo Resend).
+    const fromAddress =
+      process.env.RESEND_FROM ?? "Cláudia Alves <onboarding@resend.dev>";
+
+    async function sendEmail(to: string, subject: string, html: string, replyTo?: string) {
+      if (!resendKey) return;
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resendKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: fromAddress,
+          to,
+          subject,
+          html,
+          ...(replyTo ? { reply_to: replyTo } : {}),
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.text().catch(() => "(sem body)");
+        console.error(`[contact:resend] ${res.status} ao enviar para ${to}: ${body}`);
+      }
+    }
 
     // 2. Notificação para a fotógrafa
     const notify = process.env.NOTIFY_EMAIL;
@@ -189,20 +216,12 @@ async function enrichAndNotify(
         <p><strong>Resumo IA:</strong> ${escapeHtml(ai.summary)}</p>
         <p><strong>Estimativa:</strong> ${escapeHtml(ai.estimate)}</p>
       `;
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "Cláudia Alves <noreply@claudiaalves.pt>",
-          to: notify,
-          reply_to: payload.email,
-          subject: `Novo contacto · ${payload.sessionType} · ${payload.name}`,
-          html,
-        }),
-      }).catch((e) => console.error("[contact:notify-email]", e));
+      await sendEmail(
+        notify,
+        `Novo contacto · ${payload.sessionType} · ${payload.name}`,
+        html,
+        payload.email
+      );
     }
 
     // 3. Email de confirmação ao cliente
@@ -226,19 +245,11 @@ async function enrichAndNotify(
           </p>
         </div>
       `;
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "Cláudia Alves <noreply@claudiaalves.pt>",
-          to: payload.email,
-          subject: "O teu pedido chegou · Cláudia Alves Fotografia",
-          html: clientHtml,
-        }),
-      }).catch((e) => console.error("[contact:client-email]", e));
+      await sendEmail(
+        payload.email,
+        "O teu pedido chegou · Cláudia Alves Fotografia",
+        clientHtml
+      );
     }
   } catch (e) {
     console.error("[contact:enrichAndNotify]", e);
