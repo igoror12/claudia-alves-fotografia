@@ -20,19 +20,21 @@ export const metadata: Metadata = {
  * recente como capa + contagem total. Clica para ver tudo da categoria.
  */
 export default async function GalleryHub() {
-  const categories = await prisma.category.findMany({
-    orderBy: { order: "asc" },
-    include: {
-      photos: {
-        where: { published: true },
-        orderBy: [{ featured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
-        take: 1,
+  const categories = await prisma.category
+    .findMany({
+      orderBy: { order: "asc" },
+      include: {
+        photos: {
+          where: { published: true },
+          orderBy: [{ featured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
+          take: 1,
+        },
+        _count: {
+          select: { photos: { where: { published: true } } },
+        },
       },
-      _count: {
-        select: { photos: { where: { published: true } } },
-      },
-    },
-  });
+    })
+    .catch(() => []);
 
   return (
     <>

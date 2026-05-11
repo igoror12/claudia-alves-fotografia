@@ -39,7 +39,7 @@ export function Nav() {
           ["Galeria", "/galeria"],
           ["Sobre", "/#about"],
           ["Serviços", "/#services"],
-          ["Blog", "/#blog"],
+          ["Blog", "/blog"],
           ["Contacto", "/#contact"],
         ].map(([label, href]) => (
           <li key={href}>

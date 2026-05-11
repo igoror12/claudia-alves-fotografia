@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import type { Photo, Category } from "@prisma/client";
 
@@ -25,6 +25,7 @@ type Props = {
  */
 export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
   const photo = photos[index];
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -43,6 +44,18 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
     };
   }, [index, photos.length, onClose, onNavigate]);
 
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (delta < -50 && index < photos.length - 1) onNavigate(index + 1);
+    else if (delta > 50 && index > 0) onNavigate(index - 1);
+  }
+
   if (!photo) return null;
 
   const aspect = photo.height > 0 ? photo.width / photo.height : 1;
@@ -53,6 +66,8 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center bg-ink/90 backdrop-blur-md animate-fadeIn"
       onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       role="dialog"
       aria-modal="true"
       aria-label="Visualização da fotografia"

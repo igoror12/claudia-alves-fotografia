@@ -27,8 +27,26 @@ export function PhotoUploader({ categories }: Props) {
     ]);
   }, []);
 
+  const onDropRejected = useCallback(
+    (rejected: import("react-dropzone").FileRejection[]) => {
+      const errorJobs: UploadJob[] = rejected.map(({ file, errors }) => {
+        const first = errors[0];
+        let message = first?.message ?? "Ficheiro rejeitado.";
+        if (first?.code === "file-too-large") {
+          message = `Ficheiro demasiado grande (${(file.size / 1024 / 1024).toFixed(1)}MB, máx 25MB).`;
+        } else if (first?.code === "file-invalid-type") {
+          message = "Tipo de ficheiro não suportado. Usa JPG, PNG, WebP ou TIFF.";
+        }
+        return { file, status: "error" as const, message };
+      });
+      setJobs((prev) => [...prev, ...errorJobs]);
+    },
+    []
+  );
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       "image/jpeg": [".jpg", ".jpeg"],
       "image/png": [".png"],
@@ -79,6 +97,8 @@ export function PhotoUploader({ categories }: Props) {
 
   const queued = jobs.filter((j) => j.status === "queued").length;
   const uploading = jobs.some((j) => j.status === "uploading");
+  const canClear =
+    !uploading && jobs.some((j) => j.status === "done" || j.status === "error");
 
   return (
     <section className="border border-warm-light bg-white p-8">
@@ -162,19 +182,33 @@ export function PhotoUploader({ categories }: Props) {
               </li>
             ))}
           </ul>
-          <button
-            onClick={processQueue}
-            disabled={uploading || queued === 0}
-            className="btn-primary disabled:opacity-50"
-          >
-            <span>
-              {uploading
-                ? "A processar..."
-                : queued === 0
-                  ? "Tudo enviado"
-                  : `Iniciar upload (${queued})`}
-            </span>
-          </button>
+          <div className="flex gap-3 items-center">
+            <button
+              onClick={processQueue}
+              disabled={uploading || queued === 0}
+              className="btn-primary disabled:opacity-50"
+            >
+              <span>
+                {uploading
+                  ? "A processar..."
+                  : queued === 0
+                    ? "Tudo enviado"
+                    : `Iniciar upload (${queued})`}
+              </span>
+            </button>
+            {canClear && (
+              <button
+                onClick={() =>
+                  setJobs((prev) =>
+                    prev.filter((j) => j.status === "queued" || j.status === "uploading")
+                  )
+                }
+                className="text-xs uppercase tracking-[0.15em] text-warm-mid hover:text-ink transition-colors"
+              >
+                Limpar lista
+              </button>
+            )}
+          </div>
         </div>
       )}
     </section>
