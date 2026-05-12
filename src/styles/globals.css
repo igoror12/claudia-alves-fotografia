@@ -584,6 +584,151 @@ body {
   padding: 0;
   margin: 0;
 }
+
+/* Services v2: swipe escuro + preview fixed junto ao cursor. */
+.services-editorial .services-list {
+  border-top: 1px solid var(--warm-light);
+}
+.services-editorial .service {
+  border-bottom: 1px solid var(--warm-light);
+  display: grid;
+  grid-template-columns: 6rem minmax(12rem, 1fr) minmax(18rem, 1.5fr) minmax(9rem, 1fr) auto;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem 0;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    padding 300ms var(--ease-out),
+    color 300ms var(--ease-out);
+}
+.services-editorial .service::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform: translateY(100%);
+  transition: transform 500ms var(--ease-out-soft);
+  z-index: 0;
+}
+.services-editorial .service:hover::before,
+.services-editorial .service:focus-visible::before {
+  transform: translateY(0);
+}
+.services-editorial .service > * {
+  position: relative;
+  z-index: 1;
+}
+.services-editorial .service:hover,
+.services-editorial .service:focus-visible {
+  color: var(--cream);
+  padding: 2.5rem 1.5rem;
+  outline: none;
+}
+.services-editorial .service:hover .service-desc,
+.services-editorial .service:hover .service-num,
+.services-editorial .service:focus-visible .service-desc,
+.services-editorial .service:focus-visible .service-num {
+  color: rgba(250, 248, 244, 0.6);
+}
+.services-editorial .service:hover .service-name em,
+.services-editorial .service:focus-visible .service-name em {
+  color: rgba(250, 248, 244, 0.72);
+}
+.services-editorial .service:hover .price em,
+.services-editorial .service:focus-visible .price em {
+  color: var(--accent);
+}
+.services-editorial .service-num {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--warm-mid);
+}
+.services-editorial .service-name {
+  font-family: var(--font-serif), serif;
+  font-size: clamp(1.65rem, 2.4vw, 2rem);
+  font-weight: 300;
+  line-height: 1;
+}
+.services-editorial .service-name em {
+  color: var(--warm-mid);
+  font-style: italic;
+  transition: color 300ms var(--ease-out);
+}
+.services-editorial .service-desc {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--warm-mid);
+}
+.services-editorial .price {
+  font-family: var(--font-serif), serif;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+.services-editorial .price em {
+  color: var(--warm-mid);
+  font-style: italic;
+  transition: color 300ms var(--ease-out);
+}
+.services-editorial .arrow {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif), serif;
+  font-style: italic;
+  opacity: 0.7;
+  transition:
+    transform 300ms var(--ease-out),
+    opacity 300ms var(--ease-out);
+}
+.services-editorial .service:hover .arrow,
+.services-editorial .service:focus-visible .arrow {
+  transform: translateX(6px);
+  opacity: 1;
+}
+.services-editorial .service-preview {
+  position: fixed;
+  pointer-events: none;
+  z-index: 60;
+  width: 260px;
+  height: 340px;
+  overflow: hidden;
+  border-radius: 1rem;
+  opacity: 0;
+  transform: scale(0.9) rotate(-3deg);
+  transition:
+    opacity 320ms var(--ease-out),
+    transform 320ms var(--ease-out-soft);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+}
+.services-editorial .service-preview.visible {
+  opacity: 1;
+  transform: scale(1) rotate(-3deg);
+}
+@media (max-width: 900px) {
+  .services-editorial .service {
+    grid-template-columns: 3rem 1fr auto;
+    gap: 1rem;
+    padding: 1.6rem 0;
+  }
+  .services-editorial .service-desc,
+  .services-editorial .price {
+    grid-column: 2 / 4;
+  }
+  .services-editorial .arrow {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .services-editorial .service:hover,
+  .services-editorial .service:focus-visible {
+    padding: 1.9rem 1rem;
+  }
+}
 .services-stage {
   --service-row-h: 96px;
   overflow: visible;
