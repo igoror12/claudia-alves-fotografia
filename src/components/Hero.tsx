@@ -4,132 +4,126 @@ import type { Photo } from "@prisma/client";
 type Props = { featured: Photo[] };
 
 /**
- * Cada slot do hero renderiza independentemente: se há foto disponível
- * para esse índice, mostra a foto; senão, mostra um placeholder gradiente
- * com SVG. Assim funciona perfeitamente com 0, 1, 2 ou 3+ fotos sem
- * efeitos esquisitos de "tudo-ou-nada".
+ * Hero cinematográfico fullscreen.
+ *
+ * Estrutura inspirada em aberturas de exposição / filme:
+ *  - Fotografia ocupa o ecrã inteiro (object-cover), com vignette duplo
+ *    (overlay uniforme + gradient vertical) para garantir legibilidade
+ *    do texto sobre qualquer cor de fonte.
+ *  - Meta informações no topo em estilo editorial (volume · ano · local).
+ *  - Título 4 linhas com reveal escalonado vertical (cada linha 250ms
+ *    depois da anterior — tempo lento o suficiente para parecer "abrir
+ *    como filme").
+ *  - Texto curto + CTAs alinhados em baixo.
+ *  - Scroll cue minimalista no fundo do viewport (linha + texto).
+ *
+ * Sem foto featured: fallback é um gradient grade com SVG silhueta
+ * que mantém o tom editorial.
  */
-const PLACEHOLDERS = [
-  {
-    gradient: "from-[#5A4A3A] via-[#8C7060] to-[#B09080]",
-    svg: (
-      <svg viewBox="0 0 100 120" className="w-3/5 h-3/5 opacity-[0.18]" fill="none">
-        <ellipse cx="50" cy="30" rx="20" ry="22" fill="white" />
-        <path d="M10 120 C10 75 90 75 90 120" fill="white" />
-      </svg>
-    ),
-  },
-  {
-    gradient: "from-[#EAE0D5] to-[#C8B5A2]",
-    svg: (
-      <svg viewBox="0 0 100 80" className="w-3/5 h-3/5 opacity-[0.18]" fill="none">
-        <path d="M10 60 Q30 20 50 40 Q70 60 90 30" stroke="white" strokeWidth={2} fill="none" />
-        <circle cx="50" cy="40" r="15" fill="white" opacity="0.5" />
-      </svg>
-    ),
-  },
-  {
-    gradient: "from-[#6B5848] to-[#9A8070]",
-    svg: (
-      <svg viewBox="0 0 100 80" className="w-3/5 h-3/5 opacity-[0.18]" fill="none">
-        <rect x="20" y="20" width="60" height="40" rx="2" fill="white" opacity="0.3" />
-        <path d="M30 60 L50 30 L70 60" fill="white" opacity="0.5" />
-      </svg>
-    ),
-  },
-];
-
 export function Hero({ featured }: Props) {
-  // Cada slot renderiza foto OU placeholder, independentemente dos outros.
-  const slots = [0, 1, 2].map((i) => featured[i] ?? null);
+  const cover = featured[0] ?? null;
+  const year = new Date().getFullYear();
 
   return (
-    <section className="hero min-h-screen grid md:grid-cols-2 overflow-hidden">
-      <div className="flex flex-col justify-center px-6 pt-32 pb-16 sm:px-12 relative z-[2]">
-        <p className="anim-fade-up delay-1 text-[0.68rem] uppercase tracking-[0.18em] sm:tracking-[0.3em] text-accent mb-8 max-w-full">
-          Fotografia de arte e memória
-        </p>
-        <h1 className="anim-fade-up delay-2 font-serif text-[clamp(2.75rem,15vw,5.5rem)] font-light leading-[1.05] mb-8 max-w-full">
-          Cada momento
-          <br />
-          <em className="italic text-warm-mid block">é eterno</em>
-          quando fotografado
-        </h1>
-        <p className="anim-fade-up delay-3 text-[0.9rem] leading-[1.8] text-warm-mid max-w-[340px] mb-12">
-          Especialista em retratos, casamentos e eventos. Capturo a emoção
-          autêntica e a beleza fugaz dos momentos que merecem durar para sempre.
-        </p>
-        <div className="anim-fade-up delay-4 flex flex-wrap items-center gap-5 sm:gap-8">
-          <a href="#portfolio" className="btn-primary">
-            <span>Ver Portfolio</span>
-            <span>→</span>
-          </a>
-          <a href="#contact" className="btn-link">
-            Agendar sessão <span>→</span>
-          </a>
-        </div>
+    <section className="hero-cinema relative min-h-screen overflow-hidden">
+      {/* ─── Camada de fundo ─────────────────────────────────────── */}
+      <div className="absolute inset-0">
+        {cover ? (
+          <Image
+            src={cover.fullUrl}
+            alt={cover.altText}
+            fill
+            sizes="100vw"
+            quality={92}
+            priority
+            placeholder="blur"
+            blurDataURL={cover.blurDataUrl}
+            className="object-cover hero-cinema-image"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#3C3228] via-[#5A4838] to-[#8C6A54] flex items-center justify-center">
+            <svg
+              viewBox="0 0 100 120"
+              className="w-1/3 h-1/3 opacity-[0.08]"
+              fill="none"
+              aria-hidden="true"
+            >
+              <ellipse cx="50" cy="35" rx="22" ry="24" fill="white" />
+              <path d="M10 120 C10 70 90 70 90 120" fill="white" />
+            </svg>
+          </div>
+        )}
+
+        {/* Overlay uniforme + vignette vertical para legibilidade */}
+        <div className="absolute inset-0 bg-ink/55" aria-hidden="true" />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-ink/30 via-transparent to-ink/85"
+          aria-hidden="true"
+        />
       </div>
 
-      <div className="relative overflow-hidden min-h-[60vh] md:min-h-screen bg-warm-light/20">
-        <div className="absolute inset-0 md:top-0 grid grid-cols-2 grid-rows-2 gap-[3px]">
-          {/* Slot 0: ocupa coluna 1 inteira (rowSpan 2) */}
-          <HeroSlot photo={slots[0]} placeholder={PLACEHOLDERS[0]} rowSpan2 priority />
-          {/* Slot 1: top-right */}
-          <HeroSlot photo={slots[1]} placeholder={PLACEHOLDERS[1]} />
-          {/* Slot 2: bottom-right */}
-          <HeroSlot photo={slots[2]} placeholder={PLACEHOLDERS[2]} />
+      {/* ─── Conteúdo ─────────────────────────────────────────────── */}
+      <div className="relative z-10 min-h-screen flex flex-col px-6 sm:px-12 pt-28 sm:pt-32 pb-12">
+        {/* Meta info editorial no topo */}
+        <header className="hero-reveal r-1 flex justify-between items-start text-[0.6rem] sm:text-[0.65rem] uppercase tracking-[0.3em] text-cream/55">
+          <div>Vol. 01 — {year}</div>
+          <div className="hidden sm:block">Braga · Portugal</div>
+          <div className="text-right">
+            <span className="opacity-60">Fotografia</span>
+            <span className="block sm:inline sm:ml-2 text-accent">
+              Cláudia Alves
+            </span>
+          </div>
+        </header>
+
+        {/* Spacer + Título cinematográfico (parte central-low) */}
+        <div className="flex-1 flex flex-col justify-end pb-16 sm:pb-20">
+          <p className="hero-reveal r-2 text-[0.65rem] sm:text-[0.7rem] uppercase tracking-[0.32em] text-accent mb-8">
+            Um diário de luz
+          </p>
+
+          <h1 className="font-serif font-light text-cream leading-[1.02] text-[clamp(2.5rem,9vw,7rem)] tracking-[-0.01em]">
+            <span className="hero-reveal r-3 block">Cada</span>
+            <span className="hero-reveal r-4 block italic text-cream/75">
+              momento
+            </span>
+            <span className="hero-reveal r-5 block">é eterno quando</span>
+            <span className="hero-reveal r-6 block italic text-accent">
+              fotografado.
+            </span>
+          </h1>
+
+          <div className="hero-reveal r-7 mt-12 sm:mt-16 grid sm:grid-cols-12 gap-6 sm:gap-12 items-end">
+            <p className="sm:col-span-5 text-[0.9rem] leading-[1.8] text-cream/65 max-w-md">
+              Retratos, casamentos e eventos em Braga e em todo o norte de
+              Portugal. Capturo a emoção autêntica que merece durar para sempre.
+            </p>
+            <div className="sm:col-span-7 flex flex-wrap items-center justify-start sm:justify-end gap-5 sm:gap-8">
+              <a href="#portfolio" className="btn-primary">
+                <span>Ver Portfolio</span>
+                <span>→</span>
+              </a>
+              <a
+                href="#contact"
+                className="text-[0.75rem] uppercase tracking-[0.15em] text-cream/70 hover:text-cream transition-colors inline-flex items-center gap-2 hover:gap-4"
+              >
+                Agendar sessão <span>→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll cue */}
+        <div
+          className="hero-reveal r-8 absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-cream/50"
+          aria-hidden="true"
+        >
+          <span className="text-[0.55rem] uppercase tracking-[0.35em]">
+            Scroll
+          </span>
+          <div className="scroll-cue-line" />
         </div>
       </div>
     </section>
-  );
-}
-
-/**
- * Um slot único do grid: foto se existir, placeholder gradiente caso contrário.
- * Crítico: o `.hero-tile-inner` precisa de `position: relative` para que
- * o <Image fill> se posicione corretamente dentro dele.
- */
-function HeroSlot({
-  photo,
-  placeholder,
-  rowSpan2 = false,
-  priority = false,
-}: {
-  photo: Photo | null;
-  placeholder: { gradient: string; svg: React.ReactNode };
-  rowSpan2?: boolean;
-  priority?: boolean;
-}) {
-  // CRÍTICO: NÃO adicionar `anim-fade-in` aqui. Em globals.css, `.hero-tile`
-  // define `animation: heroDrift` no shorthand, e como vem mais abaixo no
-  // ficheiro, sobrescreve o `animation: fadeIn` da `.anim-fade-in`. O bug
-  // resultante: opacity fica stuck em 0 e a foto é invisível. A entrada
-  // cinematográfica vem do `heroZoomIn` aplicado em `.hero-tile-inner`.
-  return (
-    <div className={`hero-tile ${rowSpan2 ? "row-span-2" : ""}`}>
-      <div className="hero-tile-inner">
-        {photo ? (
-          <Image
-            src={photo.fullUrl}
-            alt={photo.altText}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            placeholder="blur"
-            blurDataURL={photo.blurDataUrl}
-            quality={90}
-            priority={priority}
-            className="object-cover"
-          />
-        ) : (
-          <div
-            role="img"
-            aria-label="Fotografia de Cláudia Alves Fotografia"
-            className={`w-full h-full bg-gradient-to-br ${placeholder.gradient} flex items-center justify-center`}
-          >
-            {placeholder.svg}
-          </div>
-        )}
-      </div>
-    </div>
   );
 }

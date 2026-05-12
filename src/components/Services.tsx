@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
+import type { Category, Photo } from "@prisma/client";
+
+type PhotoWithCategory = Photo & { category: Category };
 
 type Service = {
   num: string;
   name: string;
   desc: string;
   price: string;
-  img: string;
-  objectPosition: string;
+  categorySlug: string;
+  fallbackPosition: string;
 };
 
 type Preview = {
@@ -19,43 +22,57 @@ type Preview = {
   objectPosition: string;
 };
 
+const FALLBACK_IMAGE = "/images/claudia.jpg";
+
 const SERVICES: Service[] = [
   {
     num: "01",
     name: "Retratos",
     desc: "Sessões individuais, familiares e editoriais. Estúdio ou exterior.",
     price: "desde 220€",
-    img: "/images/claudia.jpg",
-    objectPosition: "50% 35%",
+    categorySlug: "retratos",
+    fallbackPosition: "50% 35%",
   },
   {
     num: "02",
     name: "Casamentos",
     desc: "Reportagem natural do dia inteiro. Duas máquinas, sem poses.",
     price: "desde 1.450€",
-    img: "/images/claudia.jpg",
-    objectPosition: "50% 45%",
+    categorySlug: "casamentos",
+    fallbackPosition: "50% 45%",
   },
   {
     num: "03",
     name: "Eventos",
     desc: "Batizados, festas privadas, lançamentos. Cobertura discreta.",
     price: "desde 380€",
-    img: "/images/claudia.jpg",
-    objectPosition: "50% 55%",
+    categorySlug: "eventos",
+    fallbackPosition: "50% 55%",
   },
   {
     num: "04",
     name: "Editorial",
     desc: "Marcas, espaços, produto. Direção de arte incluída.",
     price: "sob consulta",
-    img: "/images/claudia.jpg",
-    objectPosition: "50% 65%",
+    categorySlug: "editorial",
+    fallbackPosition: "50% 65%",
   },
 ];
 
-export function Services() {
+export function Services({ photos }: { photos: PhotoWithCategory[] }) {
   const [preview, setPreview] = useState<Preview | null>(null);
+
+  const previewByCategory = useMemo(() => {
+    const map = new Map<string, PhotoWithCategory>();
+
+    for (const photo of photos) {
+      if (!map.has(photo.category.slug)) {
+        map.set(photo.category.slug, photo);
+      }
+    }
+
+    return map;
+  }, [photos]);
 
   return (
     <section className="services-editorial px-6 py-20 sm:px-12 sm:py-28" id="services">
@@ -78,13 +95,19 @@ export function Services() {
         </header>
 
         <div className="services-list reveal">
-          {SERVICES.map((service) => (
-            <ServiceLink
-              key={service.num}
-              service={service}
-              onPreview={setPreview}
-            />
-          ))}
+          {SERVICES.map((service) => {
+            const photo = previewByCategory.get(service.categorySlug);
+            const previewImage = photo?.mediumUrl ?? photo?.fullUrl ?? FALLBACK_IMAGE;
+
+            return (
+              <ServiceLink
+                key={service.num}
+                service={service}
+                previewImage={previewImage}
+                onPreview={setPreview}
+              />
+            );
+          })}
         </div>
 
         {preview && (
@@ -110,9 +133,11 @@ export function Services() {
 
 function ServiceLink({
   service,
+  previewImage,
   onPreview,
 }: {
   service: Service;
+  previewImage: string;
   onPreview: (preview: Preview | null) => void;
 }) {
   const [firstName, ...restName] = service.name.split(" ");
@@ -126,8 +151,8 @@ function ServiceLink({
         onPreview({
           x: event.clientX,
           y: event.clientY,
-          src: service.img,
-          objectPosition: service.objectPosition,
+          src: previewImage,
+          objectPosition: service.fallbackPosition,
         })
       }
       onMouseLeave={() => onPreview(null)}
