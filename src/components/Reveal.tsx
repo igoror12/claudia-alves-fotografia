@@ -2,26 +2,32 @@
 
 import { useEffect } from "react";
 
-// Aplica a classe .visible nos elementos .reveal e .gallery-item quando entram
-// no viewport. Mantém o efeito do prototipo sem precisar de framer-motion.
+const REVEAL_SELECTOR =
+  ".reveal:not(.visible), .reveal-scale:not(.visible), .reveal-clip:not(.visible), .reveal-left:not(.visible), .reveal-right:not(.visible), .section-divider:not(.visible), .gallery-item:not(.visible)";
+
 export function Reveal() {
   useEffect(() => {
     const revealElements = () =>
-      document.querySelectorAll<HTMLElement>(
-        ".reveal:not(.visible), .reveal-scale:not(.visible), .reveal-clip:not(.visible), .reveal-left:not(.visible), .reveal-right:not(.visible), .section-divider:not(.visible), .gallery-item:not(.visible)"
-      );
+      document.querySelectorAll<HTMLElement>(REVEAL_SELECTOR);
 
-    if (!("IntersectionObserver" in window)) {
+    const revealAll = () => {
       revealElements().forEach((el) => el.classList.add("visible"));
+    };
+
+    if (
+      !("IntersectionObserver" in window) ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      revealAll();
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            observer.unobserve(e.target);
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
           }
         });
       },

@@ -59,14 +59,19 @@ export function Contact() {
           />
           <Field name="name" label="Nome" placeholder="O teu nome" required />
           <Field name="email" type="email" label="Email" placeholder="teu@email.com" required />
+          <Field name="phone" type="tel" label="Telefone" placeholder="+351 ..." />
           <Field name="sessionType" label="Tipo de sessão" placeholder="Casamento, retrato, evento..." required />
           <Field name="desiredDate" label="Data pretendida" placeholder="Ex: Setembro 2026" />
 
           <div className="flex flex-col gap-2">
-            <label className="text-[0.65rem] uppercase tracking-[0.2em] text-warm-mid">
+            <label
+              htmlFor="contact-message"
+              className="text-[0.65rem] uppercase tracking-[0.2em] text-warm-mid"
+            >
               Mensagem
             </label>
             <textarea
+              id="contact-message"
               name="message"
               required
               placeholder="Conta-me um pouco sobre o teu projeto..."
@@ -84,14 +89,16 @@ export function Contact() {
             </span>
           </button>
 
-          {status === "ok" && (
-            <p className="text-sm text-accent">
-              Mensagem enviada. Respondo em até 24 horas. Obrigada!
-            </p>
-          )}
-          {status === "error" && (
-            <p className="text-sm text-red-600">{error}</p>
-          )}
+          <div aria-live="polite" aria-atomic="true">
+            {status === "ok" && (
+              <p className="text-sm text-accent">
+                Mensagem enviada. Respondo em até 24 horas. Obrigada!
+              </p>
+            )}
+            {status === "error" && (
+              <p className="text-sm text-red-600">{error}</p>
+            )}
+          </div>
         </form>
       </div>
 
@@ -102,7 +109,7 @@ export function Contact() {
         <p className="text-sm leading-[1.9] text-warm-mid mb-10">
           Respondo a todas as mensagens em até 24 horas. Para casamentos e
           datas específicas, recomendo entrar em contacto com pelo menos 3
-          meses de antecedência — as minhas disponibilidades preenchem-se
+          meses de antecedência. As minhas disponibilidades preenchem-se
           rapidamente, especialmente na primavera e no verão.
         </p>
         <div className="flex flex-col gap-4">
@@ -129,12 +136,18 @@ function Field({
   placeholder?: string;
   required?: boolean;
 }) {
+  const id = `contact-${name}`;
+
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-[0.65rem] uppercase tracking-[0.2em] text-warm-mid">
+      <label
+        htmlFor={id}
+        className="text-[0.65rem] uppercase tracking-[0.2em] text-warm-mid"
+      >
         {label}
       </label>
       <input
+        id={id}
         name={name}
         type={type}
         placeholder={placeholder}

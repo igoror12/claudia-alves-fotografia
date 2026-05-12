@@ -208,7 +208,7 @@ async function sendContactEmails(
   const photographerEmail = process.env.NOTIFY_EMAIL;
   const from =
     process.env.RESEND_FROM_EMAIL ??
-    "Claudia Alves Fotografia <noreply@claudiaalves.pt>";
+    "Claudia Alves Fotografia <noreply@claudialvesfotografia.pt>";
 
   if (!process.env.RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY is not configured.");

@@ -116,7 +116,7 @@ function HeroSlot({
             sizes="(max-width: 768px) 100vw, 50vw"
             placeholder="blur"
             blurDataURL={photo.blurDataUrl}
-            quality={95}
+            quality={90}
             priority={priority}
             className="object-cover"
           />

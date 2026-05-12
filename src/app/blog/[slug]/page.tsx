@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 import { prisma } from "@/lib/prisma";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -54,7 +55,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
-  const contentHtml = await marked(post.content, { async: false });
+  const rawContentHtml = await marked(post.content, { async: false });
+  const contentHtml = DOMPurify.sanitize(rawContentHtml);
 
   const structuredData = {
     "@context": "https://schema.org",

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 import type { BlogPost } from "@prisma/client";
 
 type Props = { post?: BlogPost };
@@ -194,7 +195,7 @@ export function BlogEditor({ post }: Props) {
             className="blog-content border border-warm-light border-t-0 p-4 min-h-[320px] bg-white"
             dangerouslySetInnerHTML={{
               __html: content.trim()
-                ? (marked.parse(content) as string)
+                ? DOMPurify.sanitize(marked.parse(content) as string)
                 : '<p style="color:#9e8e7e;font-style:italic">Sem conteúdo para pré-visualizar.</p>',
             }}
           />
