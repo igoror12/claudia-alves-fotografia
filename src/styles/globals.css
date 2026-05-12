@@ -169,6 +169,35 @@ body {
   }
 }
 
+/* Hero cinema — zoom Ken-Burns muito lento (1.00 → 1.06 em 24s, sem loop
+   para não distrair). A foto está fixa no resto da experiência. */
+@keyframes heroCinemaZoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+/* Scroll cue — barra accent que desce dentro de uma linha vertical. */
+@keyframes scrollCueDrop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    ANIMAÇÃO: FADE-UP STAGGERED (Hero, headers de secção)
    Aplica fadeUp a partir do estado inicial com delay configurável
@@ -204,6 +233,71 @@ body {
 }
 .anim-fade-in.delay-3 {
   animation-delay: 0.32s;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO CINEMA — reveal LENTO escalonado (sensação de abertura de filme)
+   Duração 1.2s + delays espaçados 250ms entre cada linha.
+   Eight steps: meta (r-1) · eyebrow (r-2) · 4 linhas título (r-3..r-6) ·
+   texto/CTAs (r-7) · scroll cue (r-8).
+   ═══════════════════════════════════════════════════════════════════ */
+.hero-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  animation: fadeUp 1.2s var(--ease-out-soft) forwards;
+  will-change: opacity, transform;
+}
+.hero-reveal.r-1 {
+  animation-delay: 0.2s;
+}
+.hero-reveal.r-2 {
+  animation-delay: 0.45s;
+}
+.hero-reveal.r-3 {
+  animation-delay: 0.7s;
+}
+.hero-reveal.r-4 {
+  animation-delay: 0.95s;
+}
+.hero-reveal.r-5 {
+  animation-delay: 1.2s;
+}
+.hero-reveal.r-6 {
+  animation-delay: 1.45s;
+}
+.hero-reveal.r-7 {
+  animation-delay: 1.85s;
+}
+.hero-reveal.r-8 {
+  animation-delay: 2.4s;
+}
+
+/* Imagem do hero faz zoom muito lento (Ken-Burns) ao carregar.
+   `forwards` mantém o estado final. NÃO em loop — quer-se uma entrada
+   cinematográfica, não um screensaver. */
+.hero-cinema-image {
+  animation: heroCinemaZoom 24s var(--ease-out) forwards;
+  will-change: transform;
+}
+
+/* Scroll cue: linha vertical 1×40px com barra accent que desce em loop. */
+.scroll-cue-line {
+  position: relative;
+  width: 1px;
+  height: 40px;
+  background: rgba(250, 248, 244, 0.18);
+  overflow: hidden;
+}
+.scroll-cue-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: var(--accent);
+  animation: scrollCueDrop 2.6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -489,6 +583,214 @@ body {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+.services-stage {
+  --service-row-h: 96px;
+  overflow: visible;
+}
+.service-line {
+  position: relative;
+  min-height: var(--service-row-h);
+  border-bottom: 1px solid var(--warm-light);
+}
+.service-line:last-child {
+  border-bottom: 0;
+}
+.service-line::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--section-dark);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.45s var(--ease-out);
+  z-index: 0;
+}
+.service-line.is-active::before,
+.service-line:focus-within::before {
+  transform: scaleY(1);
+}
+.service-line-link {
+  position: relative;
+  z-index: 1;
+  min-height: var(--service-row-h);
+  display: grid;
+  grid-template-columns: 64px minmax(160px, 1.1fr) minmax(260px, 1.35fr) 140px 48px;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 0 0 0;
+  text-decoration: none;
+}
+.service-line-num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: var(--warm-mid);
+}
+.service-line-name {
+  font-family: var(--font-serif), serif;
+  font-size: clamp(1.55rem, 2.4vw, 2rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--ink);
+}
+.service-line-desc {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--warm-mid);
+}
+.service-line-price {
+  font-family: var(--font-serif), serif;
+  font-size: 1rem;
+  color: var(--warm-mid);
+  white-space: nowrap;
+}
+.service-line-price span {
+  margin-right: 0.32rem;
+  font-size: 0.82rem;
+  color: rgba(158, 142, 126, 0.72);
+}
+.service-line-price em {
+  font-style: italic;
+}
+.service-line-arrow {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(221, 212, 200, 0.75);
+  border-radius: 999px;
+  color: var(--warm-mid);
+  transition:
+    background-color 0.35s var(--ease-out),
+    border-color 0.35s var(--ease-out),
+    color 0.35s var(--ease-out),
+    transform 0.35s var(--ease-out);
+}
+.service-line-num,
+.service-line-name,
+.service-line-desc,
+.service-line-price,
+.service-line-price span {
+  transition: color 0.35s var(--ease-out);
+}
+.service-line.is-active .service-line-num,
+.service-line:focus-within .service-line-num {
+  color: rgba(201, 168, 130, 0.72);
+}
+.service-line.is-active .service-line-name,
+.service-line:focus-within .service-line-name {
+  color: var(--cream);
+}
+.service-line.is-active .service-line-desc,
+.service-line:focus-within .service-line-desc {
+  color: rgba(250, 248, 244, 0.58);
+}
+.service-line.is-active .service-line-price,
+.service-line.is-active .service-line-price span,
+.service-line:focus-within .service-line-price,
+.service-line:focus-within .service-line-price span {
+  color: var(--accent);
+}
+.service-line.is-active .service-line-arrow,
+.service-line:focus-within .service-line-arrow {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--ink);
+  transform: translateX(4px);
+}
+.service-active-preview {
+  position: absolute;
+  top: calc((var(--active-service) * var(--service-row-h)) + 18px);
+  right: -48px;
+  z-index: 3;
+  width: 218px;
+  height: 288px;
+  pointer-events: none;
+  transition: top 0.45s var(--ease-out);
+}
+.service-active-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  transform: rotate(-4deg);
+  box-shadow: 0 34px 70px -28px rgba(46, 40, 32, 0.55);
+  background: var(--warm-light);
+}
+.service-active-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(250, 248, 244, 0.12), rgba(46, 40, 32, 0.28)),
+    radial-gradient(circle at 30% 16%, rgba(250, 248, 244, 0.3), transparent 32%);
+}
+.service-active-label {
+  position: absolute;
+  top: 84px;
+  left: -58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--warm-mid);
+  font-family: var(--font-serif), serif;
+  font-style: italic;
+  font-size: 1rem;
+  box-shadow: 0 16px 34px -22px rgba(46, 40, 32, 0.55);
+}
+@media (max-width: 1024px) {
+  .service-active-preview {
+    right: -12px;
+    width: 180px;
+    height: 244px;
+  }
+  .service-active-label {
+    top: 76px;
+    left: -42px;
+    width: 62px;
+    height: 62px;
+  }
+}
+@media (max-width: 767px) {
+  .services-stage {
+    --service-row-h: auto;
+    overflow: hidden;
+  }
+  .service-line-link {
+    min-height: 132px;
+    grid-template-columns: 42px 1fr 42px;
+    gap: 0.85rem;
+    padding: 1.25rem 0;
+  }
+  .service-line-num {
+    align-self: start;
+    padding-top: 0.22rem;
+  }
+  .service-line-name {
+    grid-column: 2;
+  }
+  .service-line-desc {
+    grid-column: 2 / 4;
+    display: block;
+    margin-top: -0.25rem;
+  }
+  .service-line-price {
+    grid-column: 2;
+    font-size: 0.95rem;
+  }
+  .service-line-arrow {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .service-active-preview {
+    display: none;
+  }
 }
 .service-row {
   position: relative;
@@ -971,6 +1273,16 @@ body.cursor-view .cursor-ver-label {
   }
   html {
     scroll-behavior: auto !important;
+  }
+  /* Hero Ken-Burns (zoom contínuo na foto fullscreen) e scroll cue
+     em loop: desligados para utilizadores sensíveis a movimento. */
+  .hero-cinema-image {
+    animation: none !important;
+  }
+  .scroll-cue-line::after {
+    animation: none !important;
+    opacity: 0.5;
+    height: 100%;
   }
   /* Reveals encurtam para 400ms + translado mínimo (perceptível mas
      menos pronunciado para sensíveis a movimento). */
