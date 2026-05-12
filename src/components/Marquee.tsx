@@ -1,37 +1,25 @@
-// Reproduz fielmente o ritmo do protótipo: items de texto e estrelas
-// como elementos SEPARADOS, espaçados uniformemente. A duplicação é
-// intencional para criar o loop infinito sem "salto" visual.
-const ITEMS = ["Retratos", "Casamentos", "Eventos", "Braga · Portugal"];
+const ITEMS = [
+  "Retratos",
+  "\u2726",
+  "Casamentos",
+  "\u2726",
+  "Eventos",
+  "\u2726",
+  "Editorial",
+  "\u2726",
+  "Fam\u00edlia",
+  "\u2726",
+];
 
-function buildSequence(): { type: "text" | "dot"; value: string }[] {
-  const seq: { type: "text" | "dot"; value: string }[] = [];
-  for (const item of ITEMS) {
-    seq.push({ type: "text", value: item });
-    seq.push({ type: "dot", value: "✦" });
-  }
-  return [...seq, ...seq];
-}
+const LOOP = [...ITEMS, ...ITEMS, ...ITEMS, ...ITEMS];
 
 export function Marquee() {
-  const all = buildSequence();
-
   return (
-    <div className="marquee-band">
-      <div className="marquee-inner">
-        {all.map((entry, i) =>
-          entry.type === "text" ? (
-            <span
-              key={i}
-              className="marquee-word font-serif text-[1.15rem] italic font-light text-cream tracking-[0.05em] opacity-80 flex-shrink-0"
-            >
-              {entry.value}
-            </span>
-          ) : (
-            <span key={i} className="marquee-dot text-[1.1rem] text-accent flex-shrink-0">
-              {entry.value}
-            </span>
-          )
-        )}
+    <div className="marquee" aria-label="Tipos de sessoes fotograficas">
+      <div className="marquee-track" aria-hidden="true">
+        {LOOP.map((item, i) => (
+          <span key={`${item}-${i}`}>{item}</span>
+        ))}
       </div>
     </div>
   );

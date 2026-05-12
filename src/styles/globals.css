@@ -276,8 +276,21 @@ body {
    `forwards` mantém o estado final. NÃO em loop — quer-se uma entrada
    cinematográfica, não um screensaver. */
 .hero-cinema-image {
+  object-position: 56% 34%;
   animation: heroCinemaZoom 24s var(--ease-out) forwards;
   will-change: transform;
+}
+
+@media (max-width: 900px) {
+  .hero-cinema-image {
+    object-position: 54% 38%;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-cinema-image {
+    object-position: 50% 42%;
+  }
 }
 
 /* Scroll cue: linha vertical 1×40px com barra accent que desce em loop. */
@@ -1447,4 +1460,36 @@ body.cursor-view .cursor-ver-label {
   .reveal-right {
     transform: translateX(16px);
   }
+}
+
+.marquee {
+  border-top: 1px solid var(--warm-light);
+  border-bottom: 1px solid var(--warm-light);
+  overflow: hidden;
+  padding: 1.6rem 0;
+  background: var(--cream);
+}
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  white-space: nowrap;
+  animation: marquee 32s linear infinite;
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--warm-mid);
+  will-change: transform;
+}
+.marquee-track span {
+  flex: 0 0 auto;
+}
+.marquee-track span:nth-child(even) {
+  color: var(--accent);
+  font-style: normal;
+  letter-spacing: 0.3em;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
 }
