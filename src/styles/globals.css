@@ -478,6 +478,105 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   SERVICE ROW — lista vertical com hover brown rising + preview cursor
+   Estilo editorial alternativo aos cards 3-col. Cada linha tem:
+   • separador hairline
+   • brown overlay que sobe de baixo no hover
+   • texto inverte para cream, preço/seta destacam em accent
+   • foto preview inclinada segue o cursor (desktop only)
+   ═══════════════════════════════════════════════════════════════════ */
+.services-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.service-row {
+  position: relative;
+  overflow: hidden;
+}
+/* Overlay brown que sobe de baixo no hover */
+.service-row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--section-dark);
+  transform: translateY(101%);
+  transition: transform 0.55s var(--ease-out);
+  z-index: 0;
+  pointer-events: none;
+}
+.service-row:hover::before,
+.service-row:focus-within::before {
+  transform: translateY(0);
+}
+.service-row-link {
+  text-decoration: none;
+}
+/* Texto e cores invertem no hover */
+.service-row .service-num,
+.service-row .service-name,
+.service-row .service-desc,
+.service-row .service-price,
+.service-row .service-arrow {
+  transition:
+    color 0.4s var(--ease-out),
+    border-color 0.4s var(--ease-out),
+    background-color 0.4s var(--ease-out),
+    transform 0.45s var(--ease-out);
+}
+.service-row:hover .service-num,
+.service-row:focus-within .service-num {
+  color: rgba(201, 168, 130, 0.55);
+}
+.service-row:hover .service-name,
+.service-row:focus-within .service-name {
+  color: var(--cream);
+}
+.service-row:hover .service-desc,
+.service-row:focus-within .service-desc {
+  color: rgba(250, 248, 244, 0.55);
+}
+.service-row:hover .service-price,
+.service-row:focus-within .service-price {
+  color: var(--accent);
+}
+.service-row:hover .service-price > span:first-child,
+.service-row:focus-within .service-price > span:first-child {
+  color: rgba(201, 168, 130, 0.6);
+}
+.service-row:hover .service-arrow,
+.service-row:focus-within .service-arrow {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--ink);
+  transform: translateX(8px);
+}
+
+/* ─── Preview inclinada que segue o cursor (desktop only) ────────── */
+.service-preview {
+  /* Inicialmente escondida; fica visível quando o row está em hover.
+     Position é controlada via JS (transform inline) — apenas o opacity
+     é animado por CSS para evitar conflito. */
+  border-radius: 2px;
+  will-change: transform, opacity;
+  /* Border-radius muito subtil + leve outline accent translúcido
+     para dar a sensação de "polaroid". */
+  outline: 1px solid rgba(250, 248, 244, 0.08);
+  outline-offset: -1px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .service-row:hover .service-preview {
+    opacity: 1;
+  }
+}
+/* Em mobile/touch a preview NUNCA aparece — rouba ecrã e não é seguível */
+@media (hover: none), (pointer: coarse) {
+  .service-preview {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    GALLERY ITEM — overlay sobe + zoom subtil + meta fade-up
    ═══════════════════════════════════════════════════════════════════ */
 .gallery-item {

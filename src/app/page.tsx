@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 import { Cursor } from "@/components/Cursor";
 import { Reveal } from "@/components/Reveal";
 import { Divider } from "@/components/Divider";
+import { ScrollProgress } from "@/components/ScrollProgress";
 
 // Revalida a homepage de 10 em 10 minutos para puxar fotos novas
 // sem precisar de redeploy. Compromisso entre frescura e cache.
@@ -109,6 +110,7 @@ export default async function HomePage() {
     <>
       <Cursor />
       <Reveal />
+      <ScrollProgress />
       <Nav />
       <Hero featured={heroPhotos} />
       <Marquee />
