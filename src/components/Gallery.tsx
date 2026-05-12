@@ -67,6 +67,11 @@ export function Gallery({ photos, categories }: Props) {
   const [filter, setFilter] = useState<string>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  function changeFilter(nextFilter: string) {
+    setFilter(nextFilter);
+    setLightboxIndex(null);
+  }
+
   const visible = photos.filter(
     (p) => filter === "all" || p.category.slug === filter
   );
@@ -98,7 +103,8 @@ export function Gallery({ photos, categories }: Props) {
           <button
             type="button"
             className={`filter-btn ${filter === "all" ? "active" : ""}`}
-            onClick={() => setFilter("all")}
+            onClick={() => changeFilter("all")}
+            aria-pressed={filter === "all"}
           >
             Todos
           </button>
@@ -107,7 +113,8 @@ export function Gallery({ photos, categories }: Props) {
               key={cat.id}
               type="button"
               className={`filter-btn ${filter === cat.slug ? "active" : ""}`}
-              onClick={() => setFilter(cat.slug)}
+              onClick={() => changeFilter(cat.slug)}
+              aria-pressed={filter === cat.slug}
             >
               {cat.name}
             </button>
@@ -137,8 +144,8 @@ export function Gallery({ photos, categories }: Props) {
               return (
                 <button
                   type="button"
-                  key={photo.id}
-                  className={`gallery-item gallery-item-link reveal stagger-${(i % 6) + 1} ${layout[i] ?? "col-span-12 md:col-span-4 aspect-[4/3]"}`}
+                  key={`${filter}-${photo.id}`}
+                  className={`gallery-item gallery-item-link reveal visible stagger-${(i % 6) + 1} ${layout[i] ?? "col-span-12 md:col-span-4 aspect-[4/3]"}`}
                   data-cursor="ver"
                   onClick={() => setLightboxIndex(i)}
                   aria-label={`Abrir fotografia: ${photo.altText}`}
