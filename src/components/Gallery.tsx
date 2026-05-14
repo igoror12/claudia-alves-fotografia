@@ -172,7 +172,7 @@ export function Gallery({ photos, categories }: Props) {
 
           {/* Link sempre visível (não condicional) — o cliente precisa
               SEMPRE de ter um caminho claro para ver tudo. */}
-          <div className="mt-12 text-center reveal">
+          <div className="mt-12 flex flex-col items-center justify-center gap-5 text-center reveal sm:flex-row">
             <Link href={seeAllHref} className="btn-link">
               {hasMore
                 ? `Ver todas as ${totalForFilter} fotografias`
@@ -180,6 +180,9 @@ export function Gallery({ photos, categories }: Props) {
                   ? "Ver galeria completa por categoria"
                   : `Ver mais ${selectedCategory ? getCategoryLabel(selectedCategory) : ""}`}
               <span>→</span>
+            </Link>
+            <Link href="#contact" className="btn-link">
+              Quero marcar uma sessão <span>→</span>
             </Link>
           </div>
         </>

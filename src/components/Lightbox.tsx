@@ -77,6 +77,7 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
   const hasPrev = index > 0;
   const hasNext = index < photos.length - 1;
   const lightboxSrc = photo.mediumUrl || photo.fullUrl;
+  const descriptionId = `lightbox-description-${photo.id}`;
 
   return (
     <div
@@ -87,6 +88,7 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
       role="dialog"
       aria-modal="true"
       aria-label="Visualização da fotografia"
+      aria-describedby={photo.description ? descriptionId : undefined}
     >
       <button
         ref={closeButtonRef}
@@ -158,6 +160,14 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
           {photo.title && (
             <p className="font-serif text-xl italic text-cream font-light">
               {photo.title}
+            </p>
+          )}
+          {photo.description && (
+            <p
+              id={descriptionId}
+              className="mx-auto mt-2 max-w-xl text-sm leading-[1.7] text-cream/65"
+            >
+              {photo.description}
             </p>
           )}
         </div>

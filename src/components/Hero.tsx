@@ -77,17 +77,27 @@ export function Hero({ featured }: Props) {
             </span>
           </h1>
 
-          <div className="hero-reveal r-7 mt-12 sm:mt-16 flex flex-wrap items-center justify-start gap-5 sm:gap-8">
-              <a href="#portfolio" className="btn-primary">
-                <span>Ver Portfolio</span>
-                <span>→</span>
-              </a>
-              <a
-                href="#contact"
-                className="text-[0.75rem] uppercase tracking-[0.15em] text-cream/70 hover:text-cream transition-colors inline-flex items-center gap-2 hover:gap-4"
-              >
-                Agendar sessão <span>→</span>
-              </a>
+          <div className="hero-reveal r-7 mt-8 sm:mt-10 max-w-xl">
+            <p className="text-[0.95rem] leading-[1.8] text-cream/72">
+              Fotografia de retratos, branding e eventos em Braga e no norte de
+              Portugal.
+            </p>
+            <p className="mt-4 text-[0.68rem] uppercase tracking-[0.2em] text-accent">
+              200+ sessões realizadas · Braga
+            </p>
+          </div>
+
+          <div className="hero-reveal r-7 mt-8 sm:mt-10 flex flex-wrap items-center justify-start gap-5 sm:gap-8">
+            <a href="#portfolio" className="btn-primary">
+              <span>Ver Portfolio</span>
+              <span>→</span>
+            </a>
+            <a
+              href="#contact"
+              className="text-[0.75rem] uppercase tracking-[0.15em] text-cream/70 hover:text-cream transition-colors inline-flex items-center gap-2 hover:gap-4"
+            >
+              Agendar sessão <span>→</span>
+            </a>
           </div>
         </div>
 

@@ -58,6 +58,16 @@ export function Services() {
             <ServiceLink key={service.num} service={service} />
           ))}
         </div>
+
+        <div className="reveal mt-12 flex flex-wrap items-center justify-between gap-5 border-t border-warm-light pt-8">
+          <p className="max-w-md text-sm leading-[1.8] text-warm-mid">
+            Tens uma ideia específica ou ainda não sabes bem que sessão faz
+            sentido? Uma chamada curta costuma esclarecer tudo.
+          </p>
+          <a href="#contact" className="btn-link">
+            Quero marcar uma sessão <span>→</span>
+          </a>
+        </div>
       </div>
     </section>
   );

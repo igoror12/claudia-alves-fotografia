@@ -60,7 +60,7 @@ export function Contact() {
           <Field name="name" label="Nome" placeholder="O teu nome" required />
           <Field name="email" type="email" label="Email" placeholder="teu@email.com" required />
           <Field name="phone" type="tel" label="Telefone" placeholder="+351 ..." />
-          <Field name="sessionType" label="Tipo de sessão" placeholder="Casamento, retrato, evento..." required />
+          <Field name="sessionType" label="Tipo de sessão" placeholder="Retrato, branding, evento..." required />
           <Field name="desiredDate" label="Data pretendida" placeholder="Ex: Setembro 2026" />
 
           <div className="flex flex-col gap-2">
@@ -107,14 +107,23 @@ export function Contact() {
           Cada história merece ser contada com cuidado e atenção
         </h3>
         <p className="text-sm leading-[1.9] text-warm-mid mb-10">
-          Respondo a todas as mensagens em até 24 horas. Para casamentos e
+          Respondo a todas as mensagens em até 24 horas. Para eventos e
           datas específicas, recomendo entrar em contacto com pelo menos 3
           meses de antecedência. As minhas disponibilidades preenchem-se
           rapidamente, especialmente na primavera e no verão.
         </p>
         <div className="flex flex-col gap-4">
-          <Detail label="Email" value="claudialvesfotografia@gmail.com" />
-          <Detail label="Telefone" value="+351 938 944 545" />
+          <Detail
+            label="Email"
+            value="claudialvesfotografia@gmail.com"
+            href="mailto:claudialvesfotografia@gmail.com"
+          />
+          <Detail
+            label="WhatsApp"
+            value="+351 938 944 545"
+            href="https://wa.me/351938944545"
+          />
+          <Detail label="Telefone" value="+351 938 944 545" href="tel:+351938944545" />
           <Detail label="Localização" value="Braga, Portugal" />
           <Detail label="Instagram" value="@claudialvesfotografia" />
         </div>
@@ -158,13 +167,27 @@ function Field({
   );
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+function Detail({
+  label,
+  value,
+  href,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+}) {
   return (
     <div className="flex gap-4 items-center text-sm">
       <span className="text-[0.65rem] uppercase tracking-[0.15em] text-accent min-w-[80px]">
         {label}
       </span>
-      <span className="text-ink">{value}</span>
+      {href ? (
+        <a href={href} className="text-ink underline-offset-4 hover:text-accent hover:underline">
+          {value}
+        </a>
+      ) : (
+        <span className="text-ink">{value}</span>
+      )}
     </div>
   );
 }
