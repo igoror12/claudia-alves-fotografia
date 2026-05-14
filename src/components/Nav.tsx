@@ -35,7 +35,7 @@ export function Nav() {
   return (
     <nav
       className={`nav-bar px-6 sm:px-12 ${
-        scrolled ? "py-4 sm:py-5 scrolled" : "py-6 sm:py-8"
+        scrolled ? "py-3 sm:py-4 scrolled" : "py-4 sm:py-5"
       }`}
       aria-label="Navegação principal"
     >

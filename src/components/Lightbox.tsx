@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import type { Photo, Category } from "@prisma/client";
+import { getCategoryLabel } from "@/lib/category-labels";
 
 type PhotoWithCategory = Photo & { category?: Category };
 
@@ -73,9 +74,9 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
 
   if (!photo) return null;
 
-  const aspect = photo.height > 0 ? photo.width / photo.height : 1;
   const hasPrev = index > 0;
   const hasNext = index < photos.length - 1;
+  const lightboxSrc = photo.mediumUrl || photo.fullUrl;
 
   return (
     <div
@@ -132,33 +133,26 @@ export function Lightbox({ photos, index, onClose, onNavigate }: Props) {
       )}
 
       <div
-        className="relative max-w-[90vw] max-h-[85vh] flex flex-col items-center gap-4"
+        className="relative flex w-[92vw] max-w-[1400px] max-h-[88vh] flex-col items-center gap-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className="relative max-w-full max-h-[78vh]"
-          style={{
-            aspectRatio: aspect.toString(),
-            width: aspect >= 1 ? `min(90vw, calc(78vh * ${aspect}))` : "auto",
-            height: aspect < 1 ? `min(78vh, calc(90vw / ${aspect}))` : "auto",
-          }}
-        >
+        <div className="relative h-[78vh] max-h-[820px] w-full">
           <Image
-            src={photo.fullUrl}
+            src={lightboxSrc}
             alt={photo.altText}
             fill
-            sizes="90vw"
+            sizes="92vw"
             className="object-contain"
             placeholder="blur"
             blurDataURL={photo.blurDataUrl}
-            quality={90}
+            quality={82}
             priority
           />
         </div>
         <div className="text-center">
           {photo.category && (
             <p className="text-[0.65rem] uppercase tracking-[0.25em] text-accent mb-1">
-              {photo.category.name}
+              {getCategoryLabel(photo.category)}
             </p>
           )}
           {photo.title && (

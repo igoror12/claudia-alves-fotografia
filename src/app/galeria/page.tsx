@@ -6,13 +6,14 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Cursor } from "@/components/Cursor";
 import { Reveal } from "@/components/Reveal";
+import { getCategoryLabel } from "@/lib/category-labels";
 
 export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Galeria · Todas as categorias",
   description:
-    "Portfolio completo de fotografia de Cláudia Alves — retratos, casamentos e eventos em Braga, Portugal.",
+    "Portfolio completo de fotografia de Cláudia Alves — retratos, branding e eventos em Braga, Portugal.",
 };
 
 /**
@@ -90,7 +91,7 @@ export default async function GalleryHub() {
                       {total} fotografia{total === 1 ? "" : "s"}
                     </p>
                     <h2 className="font-serif text-3xl font-light italic">
-                      {cat.name}
+                      {getCategoryLabel(cat)}
                     </h2>
                     {cat.description && (
                       <p className="text-[0.85rem] leading-[1.6] text-cream/70 mt-3 max-w-xs">

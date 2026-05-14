@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Photo, Category } from "@prisma/client";
 import { Lightbox } from "./Lightbox";
+import { getCategoryLabel } from "@/lib/category-labels";
 
 type PhotoWithCategory = Photo & { category: Category };
 
@@ -81,6 +82,7 @@ export function Gallery({ photos, categories }: Props) {
   const layout = LAYOUTS[display.length] ?? LAYOUTS[6];
   const totalForFilter = visible.length;
   const hasMore = totalForFilter > 6;
+  const selectedCategory = categories.find((c) => c.slug === filter);
 
   // Link de "Ver todas": se filtro está em "all", leva para galeria geral;
   // senão, para a página da categoria específica.
@@ -116,7 +118,7 @@ export function Gallery({ photos, categories }: Props) {
               onClick={() => changeFilter(cat.slug)}
               aria-pressed={filter === cat.slug}
             >
-              {cat.name}
+              {getCategoryLabel(cat)}
             </button>
           ))}
         </div>
@@ -132,15 +134,6 @@ export function Gallery({ photos, categories }: Props) {
         <>
           <div className="grid grid-cols-12 auto-rows-[1fr] gap-2">
             {display.map((photo, i) => {
-              // Tiles que ocupam mais largura merecem o variant `fullUrl` (2400px)
-              // para parecerem nítidos em retina/4K. As `col-span-12` mobile
-              // também justificam alta resolução porque ocupam ecrã inteiro.
-              const isLargeTile =
-                (layout[i] ?? "").includes("col-span-12") ||
-                (layout[i] ?? "").includes("md:col-span-7") ||
-                (layout[i] ?? "").includes("md:col-span-6");
-              const src = isLargeTile ? photo.fullUrl : photo.mediumUrl;
-
               return (
                 <button
                   type="button"
@@ -151,19 +144,19 @@ export function Gallery({ photos, categories }: Props) {
                   aria-label={`Abrir fotografia: ${photo.altText}`}
                 >
                   <Image
-                    src={src}
+                    src={photo.mediumUrl}
                     alt={photo.altText}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
                     placeholder="blur"
                     blurDataURL={photo.blurDataUrl}
-                    quality={90}
+                    quality={84}
                     className="gallery-img"
                   />
                   <div className="gallery-overlay">
                     <div className="gallery-meta">
                       <div className="text-[0.65rem] uppercase tracking-[0.2em] text-accent">
-                        {photo.category.name}
+                        {getCategoryLabel(photo.category)}
                       </div>
                       {photo.title && (
                         <div className="font-serif text-xl font-light text-white italic">
@@ -185,7 +178,7 @@ export function Gallery({ photos, categories }: Props) {
                 ? `Ver todas as ${totalForFilter} fotografias`
                 : filter === "all"
                   ? "Ver galeria completa por categoria"
-                  : `Ver mais ${categories.find((c) => c.slug === filter)?.name ?? ""}`}
+                  : `Ver mais ${selectedCategory ? getCategoryLabel(selectedCategory) : ""}`}
               <span>→</span>
             </Link>
           </div>

@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { Cursor } from "@/components/Cursor";
 import { Reveal } from "@/components/Reveal";
 import { CategoryGallery } from "@/components/CategoryGallery";
+import { getCategoryLabel } from "@/lib/category-labels";
 
 export const revalidate = 600;
 
@@ -24,10 +25,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!cat) return { title: "Galeria" };
 
   return {
-    title: `${cat.name} · Galeria`,
+    title: `${getCategoryLabel(cat)} · Galeria`,
     description:
       cat.description ??
-      `Portfolio de ${cat.name.toLowerCase()} de Cláudia Alves Fotografia em Braga.`,
+      `Portfolio de ${getCategoryLabel(cat).toLowerCase()} de Cláudia Alves Fotografia em Braga.`,
   };
 }
 
@@ -74,7 +75,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             Categoria
           </p>
           <h1 className="font-serif text-[3rem] sm:text-[3.5rem] font-light leading-[1.1] text-ink">
-            <em className="italic text-warm-mid">{cat.name}</em>
+            <em className="italic text-warm-mid">{getCategoryLabel(cat)}</em>
           </h1>
           {cat.description && (
             <p className="text-[0.95rem] leading-[1.8] text-warm-mid mt-4 max-w-xl">

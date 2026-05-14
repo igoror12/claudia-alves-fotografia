@@ -1,79 +1,38 @@
-"use client";
-
-import { useMemo, useState } from "react";
-import Image from "next/image";
-import type { Category, Photo } from "@prisma/client";
-
-type PhotoWithCategory = Photo & { category: Category };
-
 type Service = {
   num: string;
   name: string;
   desc: string;
   price: string;
-  categorySlug: string;
-  fallbackPosition: string;
 };
-
-type Preview = {
-  x: number;
-  y: number;
-  src: string;
-  objectPosition: string;
-};
-
-const FALLBACK_IMAGE = "/images/claudia.jpg";
 
 const SERVICES: Service[] = [
   {
     num: "01",
     name: "Retratos",
     desc: "Sessões individuais, familiares e editoriais. Estúdio ou exterior.",
-    price: "desde 220€",
-    categorySlug: "retratos",
-    fallbackPosition: "50% 35%",
+    price: "desde 45€",
   },
   {
     num: "02",
     name: "Casamentos",
-    desc: "Reportagem natural do dia inteiro. Duas máquinas, sem poses.",
-    price: "desde 1.450€",
-    categorySlug: "casamentos",
-    fallbackPosition: "50% 45%",
+    desc: "Reportagem natural do dia inteiro.",
+    price: "sob consulta",
   },
   {
     num: "03",
     name: "Eventos",
     desc: "Batizados, festas privadas, lançamentos. Cobertura discreta.",
-    price: "desde 380€",
-    categorySlug: "eventos",
-    fallbackPosition: "50% 55%",
+    price: "55€ hora",
   },
   {
     num: "04",
-    name: "Editorial",
+    name: "Branding",
     desc: "Marcas, espaços, produto. Direção de arte incluída.",
     price: "sob consulta",
-    categorySlug: "editorial",
-    fallbackPosition: "50% 65%",
   },
 ];
 
-export function Services({ photos }: { photos: PhotoWithCategory[] }) {
-  const [preview, setPreview] = useState<Preview | null>(null);
-
-  const previewByCategory = useMemo(() => {
-    const map = new Map<string, PhotoWithCategory>();
-
-    for (const photo of photos) {
-      if (!map.has(photo.category.slug)) {
-        map.set(photo.category.slug, photo);
-      }
-    }
-
-    return map;
-  }, [photos]);
-
+export function Services() {
   return (
     <section className="services-editorial px-6 py-20 sm:px-12 sm:py-28" id="services">
       <div className="mx-auto max-w-5xl">
@@ -95,51 +54,16 @@ export function Services({ photos }: { photos: PhotoWithCategory[] }) {
         </header>
 
         <div className="services-list reveal">
-          {SERVICES.map((service) => {
-            const photo = previewByCategory.get(service.categorySlug);
-            const previewImage = photo?.mediumUrl ?? photo?.fullUrl ?? FALLBACK_IMAGE;
-
-            return (
-              <ServiceLink
-                key={service.num}
-                service={service}
-                previewImage={previewImage}
-                onPreview={setPreview}
-              />
-            );
-          })}
+          {SERVICES.map((service) => (
+            <ServiceLink key={service.num} service={service} />
+          ))}
         </div>
-
-        {preview && (
-          <div
-            className="service-preview visible"
-            aria-hidden="true"
-            style={{ left: preview.x + 40, top: preview.y - 170 }}
-          >
-            <Image
-              src={preview.src}
-              alt=""
-              fill
-              sizes="260px"
-              className="object-cover"
-              style={{ objectPosition: preview.objectPosition }}
-            />
-          </div>
-        )}
       </div>
     </section>
   );
 }
 
-function ServiceLink({
-  service,
-  previewImage,
-  onPreview,
-}: {
-  service: Service;
-  previewImage: string;
-  onPreview: (preview: Preview | null) => void;
-}) {
+function ServiceLink({ service }: { service: Service }) {
   const [firstName, ...restName] = service.name.split(" ");
   const [priceLead, ...priceRest] = service.price.split(" ");
 
@@ -147,16 +71,6 @@ function ServiceLink({
     <a
       href="#contact"
       className="service"
-      onMouseMove={(event) =>
-        onPreview({
-          x: event.clientX,
-          y: event.clientY,
-          src: previewImage,
-          objectPosition: service.fallbackPosition,
-        })
-      }
-      onMouseLeave={() => onPreview(null)}
-      onFocus={() => onPreview(null)}
       aria-label={`${service.name} — ${service.price}`}
     >
       <span className="service-num">{service.num}</span>

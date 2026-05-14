@@ -28,46 +28,35 @@ export function About() {
         </h2>
 
         <p className="text-[0.9rem] leading-[1.9] text-cream/60 mb-6">
-          Nasci em Braga com uma câmara imaginária nas mãos, pelo menos é assim
-          que a minha mãe gosta de contar. Desde criança que me fascinava a
-          ideia de parar o tempo, de guardar numa imagem aquilo que as palavras
-          teimam em não conseguir descrever: um sorriso involuntário, o silêncio
-          partilhado entre duas pessoas, a luz que entra pela janela às três da
-          tarde de um domingo de inverno.
+          Sou a Cláudia Alves, fotógrafa em Braga, e trabalho com retratos,
+          famílias, eventos e branding. Gosto de criar sessões leves, com tempo
+          para observar, conversar e deixar que cada pessoa se reconheça nas
+          fotografias.
         </p>
         <p className="text-[0.9rem] leading-[1.9] text-cream/60 mb-6">
-          Estudei fotografia no Porto e passei os primeiros anos da minha
-          carreira a fotografar tudo e todos: festivais de música, editoriais
-          de moda e retratos de rua. Foi nessa imensidão que percebi o que
-          realmente me move: as pessoas. A autenticidade dos momentos que
-          acontecem quando alguém se esquece que está a ser fotografado.
+          A minha abordagem é calma e natural. Procuro a luz certa, os gestos
+          pequenos e a expressão que aparece quando a sessão deixa de parecer
+          uma sessão. O objetivo é simples: imagens bonitas, honestas e úteis
+          para guardar, partilhar ou comunicar uma marca.
         </p>
         <p className="text-[0.9rem] leading-[1.9] text-cream/60 mb-6">
-          Hoje, com mais de seis anos de experiência, trabalho com casais,
-          famílias e empresas em todo o norte de Portugal. A minha abordagem é
-          discreta, quase invisível, porque acredito que as melhores fotografias
-          nascem da confiança, não da pose.
+          Fotografo em exterior, em espaços interiores e em contexto de evento,
+          adaptando cada trabalho ao ritmo de quem está à minha frente.
         </p>
 
         <div className="font-serif text-[1.6rem] italic font-light text-accent my-8 tracking-[0.03em]">
           Cláudia Alves
         </div>
 
-        <div className="grid grid-cols-3 gap-5 sm:gap-8 pt-8 border-t border-cream/10">
-          {[
-            ["200+", "Sessões realizadas"],
-            ["80+", "Casamentos"],
-            ["5★", "Avaliação média"],
-          ].map(([num, label]) => (
-            <div key={label}>
-              <div className="font-serif text-[2rem] sm:text-[2.5rem] font-light text-accent leading-none mb-1">
-                {num}
-              </div>
-              <div className="text-[0.65rem] sm:text-[0.7rem] uppercase tracking-[0.12em] sm:tracking-[0.15em] text-cream/40">
-                {label}
-              </div>
+        <div className="pt-8 border-t border-cream/10">
+          <div>
+            <div className="font-serif text-[2rem] sm:text-[2.5rem] font-light text-accent leading-none mb-1">
+              200+
             </div>
-          ))}
+            <div className="text-[0.65rem] sm:text-[0.7rem] uppercase tracking-[0.12em] sm:tracking-[0.15em] text-cream/40">
+              Sessões realizadas
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -22,7 +22,6 @@ type Props = { featured: Photo[] };
  */
 export function Hero({ featured }: Props) {
   const cover = featured[0] ?? null;
-  const year = new Date().getFullYear();
 
   return (
     <section className="hero-cinema relative min-h-screen overflow-hidden">
@@ -63,25 +62,9 @@ export function Hero({ featured }: Props) {
       </div>
 
       {/* ─── Conteúdo ─────────────────────────────────────────────── */}
-      <div className="relative z-10 min-h-screen flex flex-col px-6 sm:px-12 pt-28 sm:pt-32 pb-12">
-        {/* Meta info editorial no topo */}
-        <header className="hero-reveal r-1 flex justify-between items-start text-[0.6rem] sm:text-[0.65rem] uppercase tracking-[0.3em] text-cream/55">
-          <div>Vol. 01 — {year}</div>
-          <div className="hidden sm:block">Braga · Portugal</div>
-          <div className="text-right">
-            <span className="opacity-60">Fotografia</span>
-            <span className="block sm:inline sm:ml-2 text-accent">
-              Cláudia Alves
-            </span>
-          </div>
-        </header>
-
+      <div className="relative z-10 min-h-screen flex flex-col px-6 sm:px-12 pt-24 sm:pt-28 pb-12">
         {/* Spacer + Título cinematográfico (parte central-low) */}
         <div className="flex-1 flex flex-col justify-end pb-16 sm:pb-20">
-          <p className="hero-reveal r-2 text-[0.65rem] sm:text-[0.7rem] uppercase tracking-[0.32em] text-accent mb-8">
-            Um diário de luz
-          </p>
-
           <h1 className="font-serif font-light text-cream leading-[1.02] text-[clamp(2.5rem,9vw,7rem)] tracking-[-0.01em]">
             <span className="hero-reveal r-3 block">Cada</span>
             <span className="hero-reveal r-4 block italic text-cream/75">
@@ -93,12 +76,7 @@ export function Hero({ featured }: Props) {
             </span>
           </h1>
 
-          <div className="hero-reveal r-7 mt-12 sm:mt-16 grid sm:grid-cols-12 gap-6 sm:gap-12 items-end">
-            <p className="sm:col-span-5 text-[0.9rem] leading-[1.8] text-cream/65 max-w-md">
-              Retratos, casamentos e eventos em Braga e em todo o norte de
-              Portugal. Capturo a emoção autêntica que merece durar para sempre.
-            </p>
-            <div className="sm:col-span-7 flex flex-wrap items-center justify-start sm:justify-end gap-5 sm:gap-8">
+          <div className="hero-reveal r-7 mt-12 sm:mt-16 flex flex-wrap items-center justify-start gap-5 sm:gap-8">
               <a href="#portfolio" className="btn-primary">
                 <span>Ver Portfolio</span>
                 <span>→</span>
@@ -109,7 +87,6 @@ export function Hero({ featured }: Props) {
               >
                 Agendar sessão <span>→</span>
               </a>
-            </div>
           </div>
         </div>
 

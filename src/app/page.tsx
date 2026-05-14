@@ -57,12 +57,11 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
 async function safeFetchHomeData(): Promise<{
   featured: PhotoWithCat[];
   gallery: PhotoWithCat[];
-  servicePhotos: PhotoWithCat[];
   posts: Post[];
   categories: Cat[];
 }> {
   try {
-    const [featured, gallery, servicePhotos, posts, categories] = await withTimeout(
+    const [featured, gallery, posts, categories] = await withTimeout(
       Promise.all([
         prisma.photo.findMany({
           where: { featured: true, published: true },
@@ -76,12 +75,6 @@ async function safeFetchHomeData(): Promise<{
           take: 6,
           include: { category: true },
         }),
-        prisma.photo.findMany({
-          where: { published: true },
-          orderBy: [{ featured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
-          take: 24,
-          include: { category: true },
-        }),
         prisma.blogPost.findMany({
           where: { published: true },
           orderBy: { publishedAt: "desc" },
@@ -92,17 +85,16 @@ async function safeFetchHomeData(): Promise<{
       2500,
       "homepage DB fetch"
     );
-    return { featured, gallery, servicePhotos, posts, categories };
+    return { featured, gallery, posts, categories };
   } catch (e) {
     // DB ainda não migrada / unreachable. Log para debug e fallback vazio.
     console.warn("[homepage] DB indisponível, a renderizar com fallback vazio:", e);
-    return { featured: [], gallery: [], servicePhotos: [], posts: [], categories: [] };
+    return { featured: [], gallery: [], posts: [], categories: [] };
   }
 }
 
 export default async function HomePage() {
-  const { featured, gallery, servicePhotos, posts, categories } =
-    await safeFetchHomeData();
+  const { featured, gallery, posts, categories } = await safeFetchHomeData();
 
   // O Hero precisa sempre de 3 fotos para preencher o lado direito.
   // Se a Cláudia ainda não marcou 3 como Destaque, completamos
@@ -126,7 +118,7 @@ export default async function HomePage() {
       <Divider />
       <About />
       <Divider />
-      <Services photos={servicePhotos} />
+      <Services />
       <Divider />
       <Blog posts={posts} />
       <Contact />
