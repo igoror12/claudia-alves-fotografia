@@ -10,10 +10,20 @@ import { getCategoryLabel } from "@/lib/category-labels";
 
 export const revalidate = 600;
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudialvesfotografia.pt";
+
 export const metadata: Metadata = {
-  title: "Galeria · Todas as categorias",
+  title: "Portfolio de Fotografia em Braga",
   description:
-    "Portfolio completo de fotografia de Cláudia Alves — retratos, branding e eventos em Braga, Portugal.",
+    "Explora retratos, branding e eventos fotografados por Cláudia Alves em Braga. Vê a galeria completa e agenda a tua sessão.",
+  alternates: { canonical: "/galeria" },
+  openGraph: {
+    title: "Portfolio de Fotografia em Braga",
+    description:
+      "Galeria de retratos, branding e eventos por Cláudia Alves Fotografia.",
+    url: "/galeria",
+  },
 };
 
 /**
@@ -37,11 +47,44 @@ export default async function GalleryHub() {
     })
     .catch(() => []);
 
+  const gallerySchema = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name: "Portfolio de Fotografia em Braga",
+    description:
+      "Galeria de retratos, branding e eventos por Cláudia Alves Fotografia.",
+    url: `${siteUrl}/galeria`,
+    creator: {
+      "@type": "LocalBusiness",
+      name: "Cláudia Alves Fotografia",
+      telephone: "+351938944545",
+      email: "claudialvesfotografia@gmail.com",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Braga",
+        addressCountry: "PT",
+      },
+    },
+    associatedMedia: categories
+      .map((cat) => cat.photos[0])
+      .filter(Boolean)
+      .map((photo) => ({
+        "@type": "ImageObject",
+        contentUrl: photo.fullUrl,
+        thumbnailUrl: photo.thumbUrl,
+        caption: photo.altText,
+      })),
+  };
+
   return (
     <>
       <Cursor />
       <Reveal />
       <Nav />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(gallerySchema) }}
+      />
 
       <main className="px-6 sm:px-12 pt-32 pb-20">
         <header className="max-w-6xl mx-auto mb-16 reveal">

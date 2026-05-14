@@ -11,6 +11,9 @@ import { getCategoryLabel } from "@/lib/category-labels";
 
 export const revalidate = 600;
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudialvesfotografia.pt";
+
 const PAGE_SIZE = 24;
 
 type Props = {
@@ -24,11 +27,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .catch(() => null);
   if (!cat) return { title: "Galeria" };
 
+  const label = getCategoryLabel(cat);
+
   return {
-    title: `${getCategoryLabel(cat)} · Galeria`,
+    title: `${label} em Braga`,
     description:
       cat.description ??
-      `Portfolio de ${getCategoryLabel(cat).toLowerCase()} de Cláudia Alves Fotografia em Braga.`,
+      `Portfolio de ${label.toLowerCase()} em Braga por Cláudia Alves Fotografia. Vê trabalhos recentes e agenda a tua sessão.`,
+    alternates: { canonical: `/galeria/${params.slug}` },
+    openGraph: {
+      title: `${label} em Braga`,
+      description:
+        cat.description ??
+        `Galeria de ${label.toLowerCase()} por Cláudia Alves Fotografia em Braga.`,
+      url: `/galeria/${params.slug}`,
+    },
   };
 }
 
@@ -56,12 +69,45 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const label = getCategoryLabel(cat);
+  const gallerySchema = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name: `${label} em Braga`,
+    description:
+      cat.description ??
+      `Portfolio de ${label.toLowerCase()} em Braga por Cláudia Alves Fotografia.`,
+    url: `${siteUrl}/galeria/${cat.slug}`,
+    creator: {
+      "@type": "LocalBusiness",
+      name: "Cláudia Alves Fotografia",
+      telephone: "+351938944545",
+      email: "claudialvesfotografia@gmail.com",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Braga",
+        addressCountry: "PT",
+      },
+    },
+    associatedMedia: photos.map((photo) => ({
+      "@type": "ImageObject",
+      contentUrl: photo.fullUrl,
+      thumbnailUrl: photo.thumbUrl,
+      caption: photo.altText,
+      ...(photo.title ? { name: photo.title } : {}),
+      ...(photo.description ? { description: photo.description } : {}),
+    })),
+  };
 
   return (
     <>
       <Cursor />
       <Reveal />
       <Nav />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(gallerySchema) }}
+      />
 
       <main className="px-6 sm:px-12 pt-32 pb-20">
         <header className="max-w-6xl mx-auto mb-12 reveal">
@@ -75,7 +121,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             Categoria
           </p>
           <h1 className="font-serif text-[3rem] sm:text-[3.5rem] font-light leading-[1.1] text-ink">
-            <em className="italic text-warm-mid">{getCategoryLabel(cat)}</em>
+            <em className="italic text-warm-mid">{label}</em>
           </h1>
           {cat.description && (
             <p className="text-[0.95rem] leading-[1.8] text-warm-mid mt-4 max-w-xl">

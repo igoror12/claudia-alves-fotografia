@@ -36,10 +36,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.metaTitle ?? post.title,
     description: post.metaDesc ?? post.excerpt,
+    alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       title: post.metaTitle ?? post.title,
       description: post.metaDesc ?? post.excerpt,
       type: "article",
+      url: `/blog/${post.slug}`,
       publishedTime: post.publishedAt?.toISOString(),
       ...(post.coverUrl ? { images: [{ url: post.coverUrl }] } : {}),
     },

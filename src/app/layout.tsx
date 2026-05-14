@@ -25,11 +25,11 @@ const sans = Figtree({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Cláudia Alves Fotografia · Retratos, Branding e Eventos em Braga",
+    default: "Fotógrafa em Braga · Cláudia Alves",
     template: "%s · Cláudia Alves Fotografia",
   },
   description:
-    "Fotografia de arte e memória em Braga, Portugal. Especialista em retratos, branding e eventos.",
+    "Sessões de retrato, branding e eventos em Braga. Fotografia natural, cuidada e profissional. Vê o portfólio e agenda a tua sessão.",
   keywords: [
     "fotografia Braga",
     "fotógrafa branding Braga",

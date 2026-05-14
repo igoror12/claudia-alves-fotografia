@@ -22,9 +22,16 @@ function formatDate(d: Date | null) {
 }
 
 export const metadata: Metadata = {
-  title: "Blog · Reflexões & Histórias",
+  title: "Blog de Fotografia em Braga",
   description:
-    "Histórias, reflexões e bastidores do diário visual de Cláudia Alves Fotografia em Braga.",
+    "Dicas, bastidores e histórias sobre retratos, branding e eventos em Braga. Inspira-te e prepara a tua próxima sessão fotográfica.",
+  alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "Blog de Fotografia em Braga",
+    description:
+      "Dicas e histórias de fotografia por Cláudia Alves Fotografia.",
+    url: "/blog",
+  },
 };
 
 type Props = { searchParams: { page?: string } };
