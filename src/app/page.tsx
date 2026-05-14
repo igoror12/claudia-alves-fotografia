@@ -72,7 +72,7 @@ async function safeFetchHomeData(): Promise<{
         prisma.photo.findMany({
           where: { published: true },
           orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-          take: 6,
+          take: 48,
           include: { category: true },
         }),
         prisma.blogPost.findMany({

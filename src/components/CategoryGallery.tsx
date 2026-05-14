@@ -28,7 +28,7 @@ export function CategoryGallery({ photos }: { photos: PhotoWithCategory[] }) {
             <button
               type="button"
               key={photo.id}
-              className="gallery-item reveal aspect-[3/4] w-full"
+              className="gallery-item reveal visible aspect-[3/4] w-full"
               data-cursor="ver"
               onClick={() => setLightboxIndex(i)}
               aria-label={`Abrir fotografia: ${photo.altText}`}

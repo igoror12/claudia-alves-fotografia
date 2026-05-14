@@ -177,6 +177,8 @@ export async function POST(req: NextRequest) {
   // Invalida o cache da homepage para a foto nova aparecer já,
   // sem esperar pelos 10 min do revalidate.
   revalidatePath("/");
+  revalidatePath("/galeria");
+  revalidatePath(`/galeria/${created.category.slug}`);
 
   return NextResponse.json({ photo: created, warning: aiWarning });
 }

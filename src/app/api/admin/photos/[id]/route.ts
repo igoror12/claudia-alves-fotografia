@@ -33,12 +33,18 @@ export async function PATCH(
   }
 
   const data = parsed.data;
-  const photo = await prisma.photo.update({ where: { id: params.id }, data });
+  const photo = await prisma.photo.update({
+    where: { id: params.id },
+    data,
+    include: { category: true },
+  });
 
   // Invalida o cache ISR da homepage e da galeria — as alterações
   // (publicar/despublicar/destacar/editar) refletem-se imediatamente em vez
   // de esperar pelos 10 min do `revalidate`.
   revalidatePath("/");
+  revalidatePath("/galeria");
+  revalidatePath(`/galeria/${photo.category.slug}`);
 
   return NextResponse.json({ photo });
 }
@@ -50,7 +56,10 @@ export async function DELETE(
   const { response } = await requireAdminSession();
   if (response) return response;
 
-  const photo = await prisma.photo.findUnique({ where: { id: params.id } });
+  const photo = await prisma.photo.findUnique({
+    where: { id: params.id },
+    include: { category: true },
+  });
   if (!photo) return NextResponse.json({ ok: true });
 
   // Limpeza no Blob (best-effort — não falha o delete se blob já não existir)
@@ -63,5 +72,7 @@ export async function DELETE(
 
   await prisma.photo.delete({ where: { id: params.id } });
   revalidatePath("/");
+  revalidatePath("/galeria");
+  revalidatePath(`/galeria/${photo.category.slug}`);
   return NextResponse.json({ ok: true });
 }

@@ -28,6 +28,11 @@ export default async function AdminDashboard() {
         <h2 className="font-serif text-2xl text-ink mb-4">
           Fotos publicadas ({photos.length})
         </h2>
+        <p className="mb-5 max-w-3xl text-sm leading-relaxed text-warm-mid">
+          O Portfolio da homepage usa as fotografias publicadas com menor valor
+          no campo Ordem primeiro. Para escolher o que aparece, edita a foto e
+          coloca uma ordem baixa nas imagens principais de cada categoria.
+        </p>
         <PhotoGrid photos={photos} />
       </div>
     </div>
