@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudiaalves.pt";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudialvesfotografia.pt";
 
 export default function robots(): MetadataRoute.Robots {
   return {

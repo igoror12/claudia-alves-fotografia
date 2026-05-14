@@ -22,18 +22,19 @@ type Props = { featured: Photo[] };
  */
 export function Hero({ featured }: Props) {
   const cover = featured[0] ?? null;
+  const coverSrc = cover?.mediumUrl ?? cover?.fullUrl;
 
   return (
     <section className="hero-cinema relative min-h-screen overflow-hidden">
       {/* ─── Camada de fundo ─────────────────────────────────────── */}
       <div className="absolute inset-0">
-        {cover ? (
+        {cover && coverSrc ? (
           <Image
-            src={cover.fullUrl}
+            src={coverSrc}
             alt={cover.altText}
             fill
             sizes="100vw"
-            quality={92}
+            quality={86}
             priority
             placeholder="blur"
             blurDataURL={cover.blurDataUrl}

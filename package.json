@@ -18,13 +18,13 @@
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^5.22.0",
     "@vercel/analytics": "^2.0.1",
-    "@vercel/blob": "^0.27.0",
+    "@vercel/blob": "^2.3.3",
     "@vercel/speed-insights": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "isomorphic-dompurify": "^2.22.0",
     "lucide-react": "^0.460.0",
     "marked": "^18.0.3",
-    "next": "14.2.18",
+    "next": "^14.2.35",
     "next-auth": "^4.24.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -49,6 +49,6 @@
     "typescript": "^5.6.3"
   },
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=20.0.0"
   }
 }

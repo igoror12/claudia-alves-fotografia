@@ -45,7 +45,7 @@ export default async function OG() {
               maxWidth: 900,
             }}
           >
-            Retratos, casamentos
+            Retratos, branding
             <br />
             <span style={{ fontStyle: "italic", color: "#C9A882" }}>
               e eventos em Braga
@@ -75,7 +75,7 @@ export default async function OG() {
             textTransform: "uppercase",
           }}
         >
-          <span>claudiaalves.pt</span>
+          <span>claudialvesfotografia.pt</span>
           <span>Braga · Portugal</span>
         </div>
       </div>

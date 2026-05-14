@@ -4,7 +4,8 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@/styles/globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudiaalves.pt";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudialvesfotografia.pt";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
@@ -24,14 +25,14 @@ const sans = Figtree({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Cláudia Alves Fotografia · Retratos, Casamentos e Eventos em Braga",
+    default: "Cláudia Alves Fotografia · Retratos, Branding e Eventos em Braga",
     template: "%s · Cláudia Alves Fotografia",
   },
   description:
-    "Fotografia de arte e memória em Braga, Portugal. Especialista em retratos, casamentos e eventos.",
+    "Fotografia de arte e memória em Braga, Portugal. Especialista em retratos, branding e eventos.",
   keywords: [
     "fotografia Braga",
-    "fotógrafa casamento Portugal",
+    "fotógrafa branding Braga",
     "retratos Braga",
     "fotografia eventos norte Portugal",
     "Cláudia Alves",
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     siteName: "Cláudia Alves Fotografia",
     title: "Cláudia Alves Fotografia",
     description:
-      "Fotografia de retratos, casamentos e eventos em Braga, Portugal.",
+      "Fotografia de retratos, branding e eventos em Braga, Portugal.",
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
@@ -61,7 +62,7 @@ const structuredData = {
   "@id": `${siteUrl}/#business`,
   name: "Cláudia Alves Fotografia",
   description:
-    "Fotografia de retratos, casamentos e eventos em Braga, Portugal.",
+    "Fotografia de retratos, branding e eventos em Braga, Portugal.",
   url: siteUrl,
   image: `${siteUrl}/opengraph-image`,
   priceRange: "€€",
@@ -75,7 +76,25 @@ const structuredData = {
   },
   areaServed: { "@type": "Country", name: "Portugal" },
   sameAs: ["https://instagram.com/claudialvesfotografia"],
-  serviceType: ["Fotografia de casamento", "Retratos", "Eventos"],
+  serviceType: ["Retratos", "Fotografia de branding", "Eventos"],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Serviços de fotografia",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: "Retratos" },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: "Branding" },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: "Eventos" },
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

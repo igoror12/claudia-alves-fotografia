@@ -12,7 +12,8 @@ import { Reveal } from "@/components/Reveal";
 
 export const revalidate = 600;
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudiaalves.pt";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://claudialvesfotografia.pt";
 
 const MONTHS_PT = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
